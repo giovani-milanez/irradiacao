@@ -1,0 +1,1 @@
+export type SetValue<T> = T | ((val: T) => T);
