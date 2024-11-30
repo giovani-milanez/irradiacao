@@ -1,11 +1,12 @@
 import React from 'react';
-import UserInterface from '../components/UserInterface';
+// import UserInterface from '../components/UserInterface';
+import LoginComponent from '@/components/Login';
 
 const Home: React.FC = () => {
   return (
-    <main className="flex flex-wrap justify-center items-start min-h-screen bg-gray-100">
-      <div className="m-4">
-        <UserInterface backendName="go" />
+    <main className="min-h-screen bg-gray-100">
+      <div>
+        <LoginComponent></LoginComponent>
       </div>
     </main>
   );
