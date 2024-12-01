@@ -36,7 +36,7 @@ const items: MenuItem[] =
           />
         </svg>
       ),
-      label: "Meus nomes",
+      label: "Irradiação Geral",
       route: "/dashboard",
     },
     {
@@ -55,8 +55,8 @@ const items: MenuItem[] =
           />
         </svg>
       ),
-      label: "Sessões",
-      route: "/sessoes",
+      label: "Irradiação Intensiva",
+      route: "/uti",
     },
   ]
 

@@ -5,7 +5,9 @@ import AxiosInstance from '@/utils/axiosInstance';
 import { AxiosError } from 'axios';
 import Patient from '@/types/patient';
 import DefaultLayout from '@/components/Layouts/DefaultLayout';
-import Table from '@/components/Table';
+import PatientTable from '@/components/PatientTable';
+import Panel from '@/components/Panel';
+// import { CardExample } from '@/components/Card';
 
 
 export default function Dashboard() {
@@ -29,7 +31,16 @@ export default function Dashboard() {
   if (user !== undefined) {
     return (
       <DefaultLayout>
-        {data != undefined ? (<Table patients={data!} onAdded={getData}></Table>) :
+        {data != undefined ? (<>
+          <Panel title='Irradiação Geral'>
+            <p className='font-light text-xl'>As irradiações ocorrem toda semana e são feitas pelos membros do Grupo de Irradiação da Comunidade da Ação.</p>
+            <p className='pt-1 font-light text-xl'>Todos os nomes aqui colocados irão receber a irradiação já na próxima sessão.</p>
+            <p className='pt-1 font-light text-xl'>Os nomes tem validade de 30 dias ou cerca de 4 irradições, após esse período será necessário renovar a validade para continuar recebendo.</p>
+          </Panel>
+          <div className='pt-10'>
+            <PatientTable patients={data} onAdded={getData}></PatientTable>
+          </div>
+        </>) :
           <p>Nenhum nome registrado</p>}
 
       </DefaultLayout>)

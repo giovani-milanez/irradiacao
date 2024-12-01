@@ -6,7 +6,7 @@ import axios, { AxiosError } from "axios";
 import ApiError from "@/types/api-error";
 import toast from "react-hot-toast";
 
-const Table = ({ patients, onAdded }: { patients: Patient[], onAdded: () => void }) => {
+const PatientTable = ({ patients, onAdded }: { patients: Patient[], onAdded: () => void }) => {
   const [name, setName] = useState("")
   const [error, setError] = useState(false)
   const [showModal, setShowModal] = useState(false)
@@ -16,7 +16,7 @@ const Table = ({ patients, onAdded }: { patients: Patient[], onAdded: () => void
 
   const getDaysDiff = (dateStr: string): string => {
     const days = Math.round((new Date(dateStr).getTime() - new Date().getTime()) / (1000 * 3600 * 24)) + 1
-    return `${(days > 1 ? days + ' dias' : days == 0 ? 'hoje' : days + ' dia')}`
+    return `${(days > 1 ? days + ' dias' : days == 0 ? '1 dia' : days + ' dia')}`
   }
 
 
@@ -105,9 +105,6 @@ const Table = ({ patients, onAdded }: { patients: Patient[], onAdded: () => void
                 Nome
               </th>
               <th className="px-4 py-4 font-medium text-black dark:text-white">
-                Validade
-              </th>
-              <th className="px-4 py-4 font-medium text-black dark:text-white">
                 Status
               </th>
               <th className="px-4 py-4 font-medium text-black dark:text-white">
@@ -130,28 +127,20 @@ const Table = ({ patients, onAdded }: { patients: Patient[], onAdded: () => void
                   </h5>
                 </td>
                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                  <p className="text-black dark:text-white">
-                    {new Date(patientItem.validity).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
-                    {
-                      !patientItem.expired ? ' (' + getDaysDiff(patientItem.validity) + ')' : ''
-                    }
-                  </p>
-                </td>
-                <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                   <p
-                    className={`inline-flex rounded-full bg-opacity-10 px-3 py-1 text-sm font-medium ${!patientItem.expired
+                    className={`inline-flex min-w-${patientItem.expired ? '20' : '35'} rounded-full bg-opacity-10 px-3 py-1 text-sm font-medium ${!patientItem.expired
                       ? "bg-success text-success"
                       : "bg-danger text-danger"
                       }`}
                   >
-                    {!patientItem.expired ? 'Válido' : 'Expirado'}
+                    {!patientItem.expired ? `Válido por ${getDaysDiff(patientItem.validity)}` : 'Expirado'}
                   </p>
                 </td>
                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                   {patientItem.session_count}
                 </td>
                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                  {patientItem.last_session ? new Date(patientItem.last_session).toLocaleString('pt-BR', { timeZone: 'UTC' }) : '-'}
+                  {patientItem.last_session ? new Date(patientItem.last_session).toLocaleString('pt-BR') : '-'}
                 </td>
                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                   <div className="flex items-center space-x-3.5">
@@ -267,4 +256,4 @@ const Table = ({ patients, onAdded }: { patients: Patient[], onAdded: () => void
   );
 };
 
-export default Table;
+export default PatientTable;

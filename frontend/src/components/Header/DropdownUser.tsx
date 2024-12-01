@@ -19,7 +19,7 @@ const DropdownUser = () => {
           <span className="block text-sm font-medium text-black dark:text-white">
             {user?.name}
           </span>
-          <span className="block text-xs">{user!.admin ? 'Administrador' : user!.member ? 'Membro' : 'Usuário'}</span>
+          <span className="block text-xs">{user == undefined ? '' : user.admin ? 'Administrador' : user.member ? 'Membro' : 'Usuário'}</span>
         </span>
 
         <span className="h-12 w-12">
