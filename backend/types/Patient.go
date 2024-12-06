@@ -40,6 +40,7 @@ type IPatientRepository interface {
 	FindByNameAndUser(c context.Context, userId int, name string) ([]Patient, error)
 	FindAllValids(c context.Context) ([]Patient, error)
 	FindByUser(c context.Context, userId int) ([]Patient, error)
+	FindBySession(c context.Context, sessionId int) ([]Patient, error)
 	GetById(c context.Context, id int, includes bool) (Patient, error)
 	Create(c context.Context, patient Patient) (Patient, error)
 	Update(c context.Context, patient Patient) error

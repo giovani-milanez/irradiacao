@@ -36,10 +36,13 @@ func main() {
 	pRepo := repository.NewPatientRepository(db)
 	uRepo := repository.NewUtiPatientRepository(db)
 	qRepo := repository.NewUtiQueueRepository(db)
+	userRepo := repository.NewUserRepository(db)
+	sRepo := repository.NewSessionRepository(db)
 
 	pc := controller.NewPatientController(service.NewPatientService(pRepo))
-	gc := controller.NewOAuthController(repository.NewUserRepository(db), pRepo, []byte(key), time.Hour * 24 * time.Duration(validity), os.Getenv("GOOGLE_CLIENT_ID"), os.Getenv("GOOGLE_CLIENT_SECRET"), os.Getenv("FACEBOOK_CLIENT_ID"), os.Getenv("FACEBOOK_CLIENT_SECRET"), os.Getenv("BACKEND_URL"), os.Getenv("FRONTEND_URL"))
+	gc := controller.NewOAuthController(userRepo, pRepo, []byte(key), time.Hour * 24 * time.Duration(validity), os.Getenv("GOOGLE_CLIENT_ID"), os.Getenv("GOOGLE_CLIENT_SECRET"), os.Getenv("FACEBOOK_CLIENT_ID"), os.Getenv("FACEBOOK_CLIENT_SECRET"), os.Getenv("BACKEND_URL"), os.Getenv("FRONTEND_URL"))
 	uc := controller.NewUtiPatientController(service.NewUtiPatientService(uRepo, qRepo))
+	sc := controller.NewSessionController(service.NewSessionService(sRepo, pRepo, uRepo, userRepo))
 
 	router := gin.Default()	
 	router.Use(middleware.ErrorMiddleware())
@@ -57,12 +60,13 @@ func main() {
 
 	priv.GET("/patients", pc.GetAll)
 	priv.GET("/patients/find", pc.FindByName)
+	priv.GET("/patients/valids", pc.FindAllValids)
 	priv.POST("/patients", pc.Create)
 	priv.DELETE("/patients/:id", pc.Delete)
 	priv.POST("/patients/:id/renew", pc.Renew)
 
 	priv.GET("/uti", uc.GetAll)
-	// priv.GET("/patients/find", uc.FindByName)
+	priv.GET("/uti/queue", uc.FindInQueue)
 	priv.POST("/uti", uc.Create)
 	priv.PUT("/uti/:id", uc.Update)
 	priv.GET("/uti/:id", uc.GetById)
@@ -70,6 +74,12 @@ func main() {
 	priv.DELETE("/uti/:id", uc.Delete)
 	priv.POST("/uti/:id/queue/leave", uc.LeaveQueue)
 	priv.POST("/uti/:id/queue/join", uc.JoinQueue)
+
+	priv.GET("/session", sc.GetAll)
+	priv.POST("/session", sc.Create)
+	priv.PUT("/session/:id", sc.Update)
+	priv.GET("/session/:id", sc.GetById)
+	priv.DELETE("/session/:id", sc.Delete)
 
 	auth.GET("/:provider/login", gc.Login)
 	auth.GET("/:provider/callback", gc.Callback)

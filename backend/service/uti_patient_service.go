@@ -30,6 +30,13 @@ func (ps *UtiPatientService) FindAll(c context.Context) ([]types.UtiPatient, err
 		return ps.FindByUser(c, u.Id)
 	}
 }
+func (ps *UtiPatientService) FindInQueue(c context.Context) ([]types.UtiPatient, error) {
+	u, ok := types.FromUserContext(c)
+	if !ok || !u.Admin {
+		return nil, types.ErrUnauhtorized
+	}
+	return ps.repo.FindInQueue(c)
+}
 func (ps *UtiPatientService) FindByUser(c context.Context, userId int) ([]types.UtiPatient, error) {
 	return ps.repo.FindByUser(c, userId)
 }

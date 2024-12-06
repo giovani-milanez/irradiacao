@@ -3,7 +3,7 @@ import { Portuguese } from "flatpickr/dist/l10n/pt"
 import { useEffect } from "react";
 import "flatpickr/dist/flatpickr.min.css";
 
-const DatePickerOne = ({ onDatePick, defaultDate }: { onDatePick: (date: Date) => void, defaultDate?: Date }) => {
+const DatePickerOne = ({ onDatePick, defaultDate, hour }: { onDatePick: (date: Date) => void, defaultDate?: Date, hour?: boolean }) => {
   useEffect(() => {
     console.log('DatePickerOne useEffect')
     // Init flatpickr
@@ -11,8 +11,9 @@ const DatePickerOne = ({ onDatePick, defaultDate }: { onDatePick: (date: Date) =
       locale: Portuguese,
       mode: "single",
       static: true,
+      enableTime: hour ? true : false,
       monthSelectorType: "dropdown",
-      dateFormat: "j M, Y",
+      dateFormat: hour ? "j M Y \\à\\s H:i" : "j M Y",
       prevArrow:
         '<svg className="fill-current" width="7" height="11" viewBox="0 0 7 11"><path d="M5.4 10.8l1.4-1.4-4-4 4-4L5.4 0 0 5.4z" /></svg>',
       nextArrow:
@@ -25,7 +26,7 @@ const DatePickerOne = ({ onDatePick, defaultDate }: { onDatePick: (date: Date) =
         onDatePick(selectedDates[0])
       }
     });
-  }, [defaultDate, onDatePick]);
+  }, [defaultDate, onDatePick, hour]);
 
   return (
     <div>

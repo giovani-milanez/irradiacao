@@ -29,6 +29,15 @@ func (pc *UtiPatientController) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, users)
 }
 
+func (pc *UtiPatientController) FindInQueue(c *gin.Context) {
+	users, err := pc.service.FindInQueue(Ctx(c))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	c.JSON(http.StatusOK, users)
+}
+
 func (pc *UtiPatientController) Create(c *gin.Context) {
 	var dto dto.CreateUtiPatientDTO
 	err := json.NewDecoder(c.Request.Body).Decode(&dto)

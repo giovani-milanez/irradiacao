@@ -55,6 +55,15 @@ func (pc *PatientController) FindByName(c *gin.Context) {
 	c.JSON(http.StatusOK, users)
 }
 
+func (pc *PatientController) FindAllValids(c *gin.Context) {
+	users, err := pc.service.FindAllValids(Ctx(c))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, users)
+}
+
 func (pc *PatientController) Delete(c *gin.Context) {	
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {

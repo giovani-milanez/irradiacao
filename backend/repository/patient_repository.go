@@ -19,13 +19,15 @@ func NewPatientRepository(db *sql.DB) *PatientRepository {
 func (pr *PatientRepository) runSelect(c context.Context, includes bool, where string, args ...any) ([]types.Patient, error) {
 	query := 
 	fmt.Sprintf(
-	`SELECT COUNT(ps.id_patient) AS session_count, MAX(s.date) AS last_session, p.* FROM patients_session ps 
-		RIGHT JOIN patients p ON ps.id_patient = p.id 
-		LEFT JOIN sessions s ON ps.id_session = s.id 
-		%s 
-	GROUP BY p.id`, where)
+	`SELECT
+		(SELECT COUNT(*) AS session_count FROM patients_session ps JOIN sessions s ON s.id = ps.id_session WHERE ps.id_patient = p.id AND s.done = TRUE),
+		(SELECT MAX(s.date) AS last_session FROM sessions s JOIN patients_session ps ON ps.id_session = s.id WHERE ps.id_patient = p.id AND s.done = TRUE),
+		p.*
+	FROM patients p
+	%s
+	ORDER BY p.created desc`, where)
 	if !includes {
-		query = fmt.Sprintf("SELECT * from patients p %s", where)
+		query = fmt.Sprintf("SELECT p.* from patients p %s", where)
 	}
 	rows, err := pr.DB.QueryContext(c, query, args...)
 	if err != nil {
@@ -69,10 +71,13 @@ func (pr *PatientRepository) FindByNameAndUser(c context.Context, userId int, na
 	return pr.runSelect(c, true, "WHERE p.id_user = $1 AND p.name ILIKE CONCAT('%%',$2::text,'%%') AND deleted = false", userId, name)
 }
 func (pr *PatientRepository) FindAllValids(c context.Context) ([]types.Patient, error) {
-	return pr.runSelect(c, true, "WHERE p.validity > $1 AND p.deleted = false", time.Now().UTC())
+	return pr.runSelect(c, false, "WHERE p.validity > $1 AND p.deleted = false", time.Now().UTC())
 }
 func (pr *PatientRepository) FindByUser(c context.Context, userId int) ([]types.Patient, error) {
 	return pr.runSelect(c, true, "WHERE p.id_user = $1 AND p.deleted = false", userId)
+}
+func (pr *PatientRepository) FindBySession(c context.Context, sessionId int) ([]types.Patient, error) {
+	return pr.runSelect(c, false, "JOIN patients_session ps ON ps.id_patient = p.id WHERE ps.id_session = $1", sessionId)
 }
 func (pr *PatientRepository) GetById(c context.Context, id int, includes bool) (types.Patient, error) {
 	ret, err := pr.runSelect(c, includes, "WHERE p.id = $1 AND p.deleted = false", id)

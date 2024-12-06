@@ -30,9 +30,8 @@ type QueueInfo struct {
 
 type IUtiPatientService interface {
 	FindAll(c context.Context) ([]UtiPatient, error)
+	FindInQueue(c context.Context) ([]UtiPatient, error)
 	FindByUser(c context.Context, userId int) ([]UtiPatient, error)
-	// FindByName(c context.Context, name string, partial bool) ([]UtiPatient, error)
-	// FindByNameAndUser(c context.Context, userId int, name string) ([]UtiPatient, error)
 	GetById(c context.Context, id int) (UtiPatient, error)
 	Create(c context.Context, utiPatient dto.CreateUtiPatientDTO) (UtiPatient, error)
 	Update(c context.Context, utiPatient dto.UpdateUtiPatientDTO) error
@@ -46,7 +45,9 @@ type IUtiPatientRepository interface {
 	FindAll(c context.Context) ([]UtiPatient, error)
 	FindByName(c context.Context, name string, partial bool) ([]UtiPatient, error)
 	// FindByNameAndUser(c context.Context, userId int, name string) ([]UtiPatient, error)
+	FindInQueue(c context.Context) ([]UtiPatient, error)
 	FindByUser(c context.Context, userId int) ([]UtiPatient, error)
+	FindBySession(c context.Context, sessionId int) ([]UtiPatient, error)
 	GetById(c context.Context, id int, includes bool) (UtiPatient, error)
 	Create(c context.Context, utiPatient UtiPatient) (UtiPatient, error)
 	Update(c context.Context, utiPatient UtiPatient) error

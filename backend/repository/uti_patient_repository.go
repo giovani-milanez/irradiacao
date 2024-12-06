@@ -15,23 +15,29 @@ func NewUtiPatientRepository(db *sql.DB) *UtiPatientRepository {
 	return &UtiPatientRepository{ DB: db }
 }
 
-func (pr *UtiPatientRepository) runSelect(c context.Context, includes bool, where string, args ...any) ([]types.UtiPatient, error) {
+func (pr *UtiPatientRepository) runSelect(c context.Context, includes bool, inQ bool, where string, args ...any) ([]types.UtiPatient, error) {
+	qJoin := "LEFT JOIN"
+	if inQ { 
+		qJoin = "JOIN"
+	}
 	query := 
 	fmt.Sprintf(
-	`SELECT COUNT(ps.id_uti) AS session_count, MAX(s.date) AS last_session, q.position, q.joined, p.* FROM uti_session ps 
-		RIGHT JOIN uti_patients p ON ps.id_uti = p.id 
-		LEFT JOIN sessions s ON ps.id_session = s.id 
-		LEFT JOIN uti_queue q ON q.id_uti = p.id
-		%s 
-		GROUP BY p.id, q.id 
-		ORDER BY q.position`, where)
+	`SELECT
+		(SELECT COUNT(*) AS session_count FROM uti_session ps JOIN sessions s ON s.id = ps.id_session WHERE ps.id_uti = p.id AND s.done = TRUE),
+		(SELECT MAX(s.date) AS last_session FROM sessions s JOIN uti_session ps ON ps.id_session = s.id WHERE ps.id_uti = p.id AND s.done = TRUE),
+		q.position, q.joined,
+		p.*
+	FROM uti_patients p
+	%s uti_queue q ON q.id_uti = p.id
+	%s
+	ORDER BY q.position`, qJoin, where)
 	if !includes {
 		query = fmt.Sprintf(`
 			SELECT q.position, q.joined, p.* FROM uti_patients p 
-			LEFT JOIN uti_queue q ON q.id_uti = p.id 
+			%s uti_queue q ON q.id_uti = p.id 
 			%s 
 			GROUP BY p.id, q.id 
-			ORDER BY q.position`, where)
+			ORDER BY q.position`, qJoin, where)
 	}
 	rows, err := pr.DB.QueryContext(c, query, args...)
 	if err != nil {
@@ -66,22 +72,25 @@ func (pr *UtiPatientRepository) runSelect(c context.Context, includes bool, wher
 }
 
 func (pr *UtiPatientRepository) FindAll(c context.Context) ([]types.UtiPatient, error) {
-	return pr.runSelect(c, true, "")
+	return pr.runSelect(c, true, false, "")
 }
 func (pr *UtiPatientRepository) FindByName(c context.Context, name string, partial bool) ([]types.UtiPatient, error) {
 	if partial {
-		return pr.runSelect(c, true, "WHERE p.name ILIKE CONCAT('%%',$1::text,'%%') AND p.deleted = false", name)
+		return pr.runSelect(c, true, false, "WHERE p.name ILIKE CONCAT('%%',$1::text,'%%') AND p.deleted = false", name)
 	}
-	return pr.runSelect(c, true, "WHERE p.name ILIKE $1::text", name)
+	return pr.runSelect(c, true, false, "WHERE p.name ILIKE $1::text", name)
 }
-// func (pr *UtiPatientRepository) FindByNameAndUser(c context.Context, userId int, name string) ([]types.UtiPatient, error) {
-// 	return pr.runSelect(c, true, "WHERE p.id_user = $1 AND p.name ILIKE CONCAT('%%',$2::text,'%%') AND deleted = false", userId, name)
-// }
+func (pr *UtiPatientRepository) FindInQueue(c context.Context) ([]types.UtiPatient, error) {
+	return pr.runSelect(c, true, true, "")
+}
 func (pr *UtiPatientRepository) FindByUser(c context.Context, userId int) ([]types.UtiPatient, error) {
-	return pr.runSelect(c, true, "WHERE p.id_user = $1 AND p.deleted = false", userId)
+	return pr.runSelect(c, true, false, "WHERE p.id_user = $1 AND p.deleted = false", userId)
+}
+func (pr *UtiPatientRepository) FindBySession(c context.Context, sessionId int) ([]types.UtiPatient, error) {
+	return pr.runSelect(c, false, false, "JOIN uti_session us ON us.id_uti = p.id WHERE us.id_session = $1", sessionId)
 }
 func (pr *UtiPatientRepository) GetById(c context.Context, id int, includes bool) (types.UtiPatient, error) {
-	ret, err := pr.runSelect(c, includes, "WHERE p.id = $1 AND p.deleted = false", id)
+	ret, err := pr.runSelect(c, includes, false, "WHERE p.id = $1 AND p.deleted = false", id)
 	if err != nil {
 		return types.UtiPatient{}, err
 	}

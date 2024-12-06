@@ -45,6 +45,9 @@ func (ps *PatientService) FindByNameAndUser(c context.Context, userId int, name 
 	return ps.repo.FindByNameAndUser(c, userId, name)
 }
 func (ps *PatientService) FindAllValids(c context.Context) ([]types.Patient, error) {
+	u, ok := types.FromUserContext(c)
+	if !ok || !u.Admin { return nil, types.ErrUnauhtorized }
+	
 	return ps.repo.FindAllValids(c)
 }
 func (ps *PatientService) GetById(c context.Context, id int) (types.Patient, error) {
