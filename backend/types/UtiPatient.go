@@ -31,7 +31,7 @@ type QueueInfo struct {
 type IUtiPatientService interface {
 	FindAll(c context.Context) ([]UtiPatient, error)
 	FindInQueue(c context.Context) ([]UtiPatient, error)
-	FindByUser(c context.Context, userId int) ([]UtiPatient, error)
+	FindByUser(c context.Context) ([]UtiPatient, error)
 	GetById(c context.Context, id int) (UtiPatient, error)
 	Create(c context.Context, utiPatient dto.CreateUtiPatientDTO) (UtiPatient, error)
 	Update(c context.Context, utiPatient dto.UpdateUtiPatientDTO) error

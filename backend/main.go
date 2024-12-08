@@ -38,11 +38,13 @@ func main() {
 	qRepo := repository.NewUtiQueueRepository(db)
 	userRepo := repository.NewUserRepository(db)
 	sRepo := repository.NewSessionRepository(db)
+	mRepo := repository.NewMemberRepository(db)
 
 	pc := controller.NewPatientController(service.NewPatientService(pRepo))
 	gc := controller.NewOAuthController(userRepo, pRepo, []byte(key), time.Hour * 24 * time.Duration(validity), os.Getenv("GOOGLE_CLIENT_ID"), os.Getenv("GOOGLE_CLIENT_SECRET"), os.Getenv("FACEBOOK_CLIENT_ID"), os.Getenv("FACEBOOK_CLIENT_SECRET"), os.Getenv("BACKEND_URL"), os.Getenv("FRONTEND_URL"))
 	uc := controller.NewUtiPatientController(service.NewUtiPatientService(uRepo, qRepo))
-	sc := controller.NewSessionController(service.NewSessionService(sRepo, pRepo, uRepo, userRepo))
+	sc := controller.NewSessionController(service.NewSessionService(sRepo, pRepo, uRepo, userRepo, qRepo))
+	mc := controller.NewMembersController(service.NewMemberService(mRepo))
 
 	router := gin.Default()	
 	router.Use(middleware.ErrorMiddleware())
@@ -58,14 +60,16 @@ func main() {
 	
 	pub.POST("/patients", pc.Create)
 
-	priv.GET("/patients", pc.GetAll)
+	priv.GET("/patients", pc.FindByUser)
+	priv.GET("/patients/all", pc.GetAll)
 	priv.GET("/patients/find", pc.FindByName)
 	priv.GET("/patients/valids", pc.FindAllValids)
 	priv.POST("/patients", pc.Create)
 	priv.DELETE("/patients/:id", pc.Delete)
 	priv.POST("/patients/:id/renew", pc.Renew)
 
-	priv.GET("/uti", uc.GetAll)
+	priv.GET("/uti", uc.FindByUser)
+	priv.GET("/uti/all", uc.GetAll)
 	priv.GET("/uti/queue", uc.FindInQueue)
 	priv.POST("/uti", uc.Create)
 	priv.PUT("/uti/:id", uc.Update)
@@ -80,9 +84,16 @@ func main() {
 	priv.PUT("/session/:id", sc.Update)
 	priv.GET("/session/:id", sc.GetById)
 	priv.DELETE("/session/:id", sc.Delete)
+	priv.POST("/session/:id/finish", sc.Finish)
+
+	priv.GET("/members", mc.GetAll)
+	priv.POST("/members", mc.Create)
+	priv.PUT("/members/:id", mc.Update)
+	priv.DELETE("/members/:id", mc.Delete)
 
 	auth.GET("/:provider/login", gc.Login)
 	auth.GET("/:provider/callback", gc.Callback)
+	priv.GET("/users", gc.FindAll)
 
 	router.Run(":8080")
 }

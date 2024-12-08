@@ -26,17 +26,18 @@ func NewPatientService(repo types.IPatientRepository) *PatientService {
 
 func (ps *PatientService) FindAll(c context.Context) ([]types.Patient, error) {
 	u, ok := types.FromUserContext(c)
+	if !ok || !u.Admin {
+		return nil, types.ErrUnauhtorized
+	}
+	return ps.repo.FindAll(c)	
+}
+func (ps *PatientService) FindByUser(c context.Context) ([]types.Patient, error) {
+	u, ok := types.FromUserContext(c)
 	if !ok {
 		return nil, types.ErrUnauhtorized
 	}
-	if u.Admin {
-		return ps.repo.FindAll(c)
-	} else {
-		return ps.FindByUser(c, u.Id)
-	}
-}
-func (ps *PatientService) FindByUser(c context.Context, userId int) ([]types.Patient, error) {
-	return ps.repo.FindByUser(c, userId)
+
+	return ps.repo.FindByUser(c, u.Id)
 }
 func (ps *PatientService) FindByName(c context.Context, name string, partial bool) ([]types.Patient, error) {
 	return ps.repo.FindByName(c, name, partial)

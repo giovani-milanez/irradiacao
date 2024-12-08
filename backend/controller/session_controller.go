@@ -91,3 +91,17 @@ func (pc *SessionController) GetById(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, users)
 }
+
+func (pc *SessionController) Finish(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	err = pc.service.Finish(Ctx(c), id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	c.JSON(http.StatusNoContent, nil)
+}

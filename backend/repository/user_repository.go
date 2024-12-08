@@ -35,6 +35,10 @@ func (r *UserRepository) runSelect(c context.Context, query string, args ...any)
 	return users, nil
 }
 
+func (r *UserRepository) FindAll(c context.Context) ([]types.User, error) {
+	return r.runSelect(c, "SELECT * FROM users")
+}
+
 func (r *UserRepository) FindById(c context.Context, id int) (types.User, error) {
   ret, err := r.runSelect(c, "SELECT * FROM users WHERE id = $1", id)
 	if err != nil {

@@ -65,7 +65,7 @@ func (pr *PatientRepository) FindByName(c context.Context, name string, partial 
 	if partial {
 		return pr.runSelect(c, true, "WHERE p.name ILIKE CONCAT('%%',$1::text,'%%') AND p.deleted = false", name)
 	}
-	return pr.runSelect(c, true, "WHERE p.name ILIKE $1::text", name)
+	return pr.runSelect(c, true, "WHERE p.name ILIKE $1::text AND p.deleted = false", name)
 }
 func (pr *PatientRepository) FindByNameAndUser(c context.Context, userId int, name string) ([]types.Patient, error) {
 	return pr.runSelect(c, true, "WHERE p.id_user = $1 AND p.name ILIKE CONCAT('%%',$2::text,'%%') AND deleted = false", userId, name)

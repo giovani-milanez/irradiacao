@@ -39,6 +39,10 @@ export default function SessoesPage() {
   }
 
   const rowClick = (id: number) => {
+    router.push(`/sessoes/ver/${id}`)
+  }
+
+  const editClick = (id: number) => {
     router.push(`/sessoes/editar/${id}`)
   }
 
@@ -47,5 +51,5 @@ export default function SessoesPage() {
     getData()
   }, [])
 
-  return (<DefaultLayout>{data != undefined ? (<SessionsTable sessions={data} loading={loading} onDeleteClick={deleteClick} onRowClick={rowClick} onLeaveClick={(id: number) => { console.log(id) }} onNewClick={newClick}></SessionsTable>) : (<LoadingSpinner></LoadingSpinner>)}</DefaultLayout>)
+  return (<DefaultLayout>{data != undefined ? (<SessionsTable sessions={data} loading={loading} onDeleteClick={deleteClick} onRowClick={rowClick} onEditClick={editClick} onNewClick={newClick}></SessionsTable>) : (<LoadingSpinner></LoadingSpinner>)}</DefaultLayout>)
 }

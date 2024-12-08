@@ -42,4 +42,5 @@ type ISessionService interface {
 	Create(c context.Context, item dto.CreateSessiontDTO) (Session, error)
 	Update(c context.Context, id int, item dto.CreateSessiontDTO) error
 	Delete(c context.Context, id int) error	
+	Finish(c context.Context, id int) error
 }

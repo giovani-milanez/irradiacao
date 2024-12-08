@@ -21,14 +21,10 @@ func NewUtiPatientService(repo types.IUtiPatientRepository, qRepo types.IUtiQueu
 
 func (ps *UtiPatientService) FindAll(c context.Context) ([]types.UtiPatient, error) {
 	u, ok := types.FromUserContext(c)
-	if !ok {
+	if !ok || !u.Admin {
 		return nil, types.ErrUnauhtorized
 	}
-	if u.Admin {
-		return ps.repo.FindAll(c)
-	} else {
-		return ps.FindByUser(c, u.Id)
-	}
+	return ps.repo.FindAll(c)	
 }
 func (ps *UtiPatientService) FindInQueue(c context.Context) ([]types.UtiPatient, error) {
 	u, ok := types.FromUserContext(c)
@@ -37,8 +33,12 @@ func (ps *UtiPatientService) FindInQueue(c context.Context) ([]types.UtiPatient,
 	}
 	return ps.repo.FindInQueue(c)
 }
-func (ps *UtiPatientService) FindByUser(c context.Context, userId int) ([]types.UtiPatient, error) {
-	return ps.repo.FindByUser(c, userId)
+func (ps *UtiPatientService) FindByUser(c context.Context) ([]types.UtiPatient, error) {
+	u, ok := types.FromUserContext(c)
+	if !ok {
+		return nil, types.ErrUnauhtorized
+	}
+	return ps.repo.FindByUser(c, u.Id)
 }
 func (ps *UtiPatientService) FindByName(c context.Context, name string, partial bool) ([]types.UtiPatient, error) {
 	return ps.repo.FindByName(c, name, partial)

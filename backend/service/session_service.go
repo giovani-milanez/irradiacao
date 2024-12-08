@@ -11,10 +11,11 @@ type SessionService struct {
 	p_repo types.IPatientRepository
 	ut_repo types.IUtiPatientRepository
 	u_repo types.IUserRepository
+	q_repo types.IUtiQueueRepository
 }
 
-func NewSessionService(s_repo types.ISessionRepository, p_repo types.IPatientRepository, ut_repo types.IUtiPatientRepository, u_repo types.IUserRepository) *SessionService {
-	return &SessionService{s_repo: s_repo, p_repo: p_repo, ut_repo: ut_repo, u_repo: u_repo}
+func NewSessionService(s_repo types.ISessionRepository, p_repo types.IPatientRepository, ut_repo types.IUtiPatientRepository, u_repo types.IUserRepository, qRepo types.IUtiQueueRepository) *SessionService {
+	return &SessionService{s_repo: s_repo, p_repo: p_repo, ut_repo: ut_repo, u_repo: u_repo, q_repo: qRepo}
 }
 
 func (ss *SessionService) FindAll(c context.Context) ([]types.Session, error) {
@@ -95,4 +96,46 @@ func (ss *SessionService) Delete(c context.Context, id int) error	{
 		return  types.ErrUnauhtorized
 	}
 	return ss.s_repo.Delete(c, id)
+}
+
+
+func (ss *SessionService) Finish(c context.Context, id int) error {
+	u, ok := types.FromUserContext(c)
+	if !ok || !u.Admin {
+		return  types.ErrUnauhtorized
+	}
+
+	s, err := ss.s_repo.GetById(c, id, false)
+	if err != nil {
+		return err
+	}
+	if (s.Done) {
+		return nil
+	}
+	
+	s.Done = true
+	err = ss.s_repo.Update(c, s)
+	if err != nil {
+		return err
+	}
+
+	uti, err := ss.ut_repo.FindBySession(c, s.Id)
+	if err != nil {
+		return err
+	}
+	patients, err := ss.p_repo.FindBySession(c, s.Id)
+	if err != nil {
+		return err
+	}
+
+	for _, p := range patients {
+		if !p.IdUser.Valid {
+			_ = ss.p_repo.Delete(c, p.Id)
+		}
+	}
+	for _, u := range uti {
+		_ = ss.q_repo.LeaveQueue(c, u.ID)
+	}
+
+	return ss.q_repo.FixupQueuePositions(c)
 }

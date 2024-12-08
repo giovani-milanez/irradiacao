@@ -23,7 +23,7 @@ type Patient struct {
 
 type IPatientService interface {
 	FindAll(c context.Context) ([]Patient, error)
-	FindByUser(c context.Context, userId int) ([]Patient, error)
+	FindByUser(c context.Context) ([]Patient, error)
 	FindByName(c context.Context, name string, partial bool) ([]Patient, error)
 	FindByNameAndUser(c context.Context, userId int, name string) ([]Patient, error)
 	FindAllValids(c context.Context) ([]Patient, error)

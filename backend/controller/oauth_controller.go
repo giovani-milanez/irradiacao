@@ -33,6 +33,20 @@ func NewOAuthController(repo types.IUserRepository, pRepo types.IPatientReposito
 	return &OAuthController{ repo: repo, pRepo: pRepo, key: key, validity: validity, frontendUrl: frontendUrl }
 }
 
+func (pc *OAuthController) FindAll(c *gin.Context) {	
+	u, exists := c.Get("user")
+	if exists && u.(types.User).Admin {
+		users, err := pc.repo.FindAll(Ctx(c))
+		if err != nil {
+			c.Error(err)
+			return
+		}
+		c.JSON(http.StatusOK, users)		
+	} else {
+		c.Error(types.ErrUnauhtorized)
+	}
+}
+
 func (pc *OAuthController) Login(c *gin.Context) {
 	q :=  c.Request.URL.Query()
 	q.Add("provider",  c.Param("provider"))

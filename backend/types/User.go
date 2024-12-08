@@ -23,6 +23,7 @@ func FromUserContext(ctx context.Context) (User, bool) {
 }
 
 type IUserRepository interface {	
+	FindAll(c context.Context) ([]User, error)
 	FindById(c context.Context, id int) (User, error)
 	FindByEmail(c context.Context, email string) (User, error)
 	Create(c context.Context, user User) (User, error)
