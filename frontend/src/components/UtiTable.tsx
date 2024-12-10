@@ -68,9 +68,10 @@ const UtiTable = (
                 <td
                   onClick={() => { onRowClick(patientItem.id) }}
                   className="cursor-pointer border-b border-[#eee] px-4 py-5 pl-9 dark:border-strokedark xl:pl-11">
-                  <h5 className="font-medium text-black dark:text-white">
-                    {patientItem.name}
-                  </h5>
+                  <div>
+                    <h3 className="text-lg font-medium">{patientItem.name}</h3>
+                    {new Date(patientItem.birthday.slice(0, -1)).toLocaleDateString('pt-BR')}
+                  </div>
                 </td>
                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                   <p

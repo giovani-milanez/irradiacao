@@ -1,6 +1,8 @@
 module api
 
-go 1.19
+go 1.23
+
+// toolchain go1.23.4
 
 require (
 	github.com/gin-contrib/cors v1.7.2
@@ -9,6 +11,8 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/markbates/goth v1.80.0
 )
+
+require github.com/google/go-cmp v0.6.0 // indirect
 
 require (
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
@@ -37,11 +41,11 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
-	golang.org/x/arch v0.8.0 // indirect
+	golang.org/x/arch v0.12.0 // indirect
 	golang.org/x/crypto v0.23.0 // indirect
 	golang.org/x/net v0.25.0 // indirect
 	golang.org/x/oauth2 v0.24.0 // indirect
-	golang.org/x/sys v0.20.0 // indirect
+	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

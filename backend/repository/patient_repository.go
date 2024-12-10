@@ -22,8 +22,10 @@ func (pr *PatientRepository) runSelect(c context.Context, includes bool, where s
 	`SELECT
 		(SELECT COUNT(*) AS session_count FROM patients_session ps JOIN sessions s ON s.id = ps.id_session WHERE ps.id_patient = p.id AND s.done = TRUE),
 		(SELECT MAX(s.date) AS last_session FROM sessions s JOIN patients_session ps ON ps.id_session = s.id WHERE ps.id_patient = p.id AND s.done = TRUE),
+		u.name AS username, u.email AS useremail, u.avatar AS useravatar,
 		p.*
 	FROM patients p
+	LEFT JOIN users u ON u.id = p.id_user 
 	%s
 	ORDER BY p.created desc`, where)
 	if !includes {
@@ -41,7 +43,7 @@ func (pr *PatientRepository) runSelect(c context.Context, includes bool, where s
 	for rows.Next() {
 			var u types.Patient
 			if includes {
-				if err := rows.Scan(&u.SessionCount, &u.LastSession, &u.Id, &u.IdUser, &u.Name, &u.Validity, &u.Created, &u.Deleted); err != nil {
+				if err := rows.Scan(&u.SessionCount, &u.LastSession, &u.UserName, &u.UserEmail, &u.UserAvatar, &u.Id, &u.IdUser, &u.Name, &u.Validity, &u.Created, &u.Deleted); err != nil {
 					return []types.Patient{}, err
 				}	
 			} else {
@@ -59,7 +61,7 @@ func (pr *PatientRepository) runSelect(c context.Context, includes bool, where s
 }
 
 func (pr *PatientRepository) FindAll(c context.Context) ([]types.Patient, error) {
-	return pr.runSelect(c, true, "")
+	return pr.runSelect(c, true, "WHERE p.deleted = false")
 }
 func (pr *PatientRepository) FindByName(c context.Context, name string, partial bool) ([]types.Patient, error) {
 	if partial {

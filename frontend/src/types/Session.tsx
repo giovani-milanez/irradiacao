@@ -1,4 +1,5 @@
-import { User } from "@/pages/user-context";
+// import { User } from "@/pages/user-context";
+import { User } from "@/utils/use-auth";
 import Patient from "./patient";
 import UtiPatient from "./UtiPatient";
 

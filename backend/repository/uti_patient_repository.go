@@ -26,9 +26,11 @@ func (pr *UtiPatientRepository) runSelect(c context.Context, includes bool, inQ 
 		(SELECT COUNT(*) AS session_count FROM uti_session ps JOIN sessions s ON s.id = ps.id_session WHERE ps.id_uti = p.id AND s.done = TRUE),
 		(SELECT MAX(s.date) AS last_session FROM sessions s JOIN uti_session ps ON ps.id_session = s.id WHERE ps.id_uti = p.id AND s.done = TRUE),
 		q.position, q.joined,
+		u.name AS username, u.email AS useremail, u.avatar AS useravatar,
 		p.*
 	FROM uti_patients p
 	%s uti_queue q ON q.id_uti = p.id
+	LEFT JOIN users u ON u.id = p.id_user 
 	%s
 	ORDER BY q.position`, qJoin, where)
 	if !includes {
@@ -54,7 +56,7 @@ func (pr *UtiPatientRepository) runSelect(c context.Context, includes bool, inQ 
 	for rows.Next() {
 			var u types.UtiPatient
 			if includes {
-				if err := rows.Scan(&u.SessionCount, &u.LastSession, &u.Position, &u.Joined, &u.ID, &u.UserID, &u.Name, &u.Birthday, &u.Description, &u.Created, &u.Deleted); err != nil {
+				if err := rows.Scan(&u.SessionCount, &u.LastSession, &u.Position, &u.Joined, &u.UserName, &u.UserEmail, &u.UserAvatar, &u.ID, &u.UserID, &u.Name, &u.Birthday, &u.Description, &u.Created, &u.Deleted); err != nil {
 					return []types.UtiPatient{}, err
 				}	
 			} else {
@@ -72,13 +74,13 @@ func (pr *UtiPatientRepository) runSelect(c context.Context, includes bool, inQ 
 }
 
 func (pr *UtiPatientRepository) FindAll(c context.Context) ([]types.UtiPatient, error) {
-	return pr.runSelect(c, true, false, "")
+	return pr.runSelect(c, true, false, "WHERE p.deleted = false")
 }
 func (pr *UtiPatientRepository) FindByName(c context.Context, name string, partial bool) ([]types.UtiPatient, error) {
 	if partial {
 		return pr.runSelect(c, true, false, "WHERE p.name ILIKE CONCAT('%%',$1::text,'%%') AND p.deleted = false", name)
 	}
-	return pr.runSelect(c, true, false, "WHERE p.name ILIKE $1::text", name)
+	return pr.runSelect(c, true, false, "WHERE p.name ILIKE $1::text AND p.deleted = false", name)
 }
 func (pr *UtiPatientRepository) FindInQueue(c context.Context) ([]types.UtiPatient, error) {
 	return pr.runSelect(c, true, true, "")

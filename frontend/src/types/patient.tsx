@@ -8,6 +8,9 @@ type Patient = {
   expired: boolean
   session_count: number
   last_session: string | null
+  user_name: string | null
+  user_email: string | null
+  user_avatar: string | null
 }
 
 export default Patient

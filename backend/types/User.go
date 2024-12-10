@@ -1,6 +1,9 @@
 package types
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 type User struct {
 	Id     int    `json:"id"`
@@ -9,6 +12,7 @@ type User struct {
 	Member bool   `json:"member"`
 	Admin  bool   `json:"admin"`
 	Avatar string `json:"avatar"`
+	Created time.Time `json:"created"`
 }
 
 type userKey string

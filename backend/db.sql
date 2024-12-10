@@ -4,7 +4,8 @@ CREATE TABLE "users" (
   "email" varchar NOT NULL,
   "member" bool,
   "admin" bool,
-  "avatar" varchar
+  "avatar" varchar,
+  "created" timestamp NOT NULL
 );
 
 CREATE TABLE "patients" (

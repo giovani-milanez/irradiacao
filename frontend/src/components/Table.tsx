@@ -90,7 +90,7 @@ function Table<T extends { id: number | string }>({
           type="text"
           placeholder="Buscar..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
           className="w-full xl:w-1/2 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
         />
       </div>
@@ -99,14 +99,14 @@ function Table<T extends { id: number | string }>({
         <table className="w-full">
           <thead className="bg-gray-100 border-b">
             <tr>
-              <th className="p-4 text-left">
+              {onSelectedRowsChange != undefined && <th className="p-4 text-left">
                 <input
                   type="checkbox"
                   checked={isAllRowsSelected}
                   onChange={handleSelectAll}
                   className="text-blue-600 rounded focus:ring-blue-500"
                 />
-              </th>
+              </th>}
               {columns.map(column => (
                 <th
                   key={String(column.key)}
@@ -137,14 +137,14 @@ function Table<T extends { id: number | string }>({
                   transition duration-150 ease-in-out
                 `}
               >
-                <td className="p-4">
+                {onSelectedRowsChange != undefined && <td className="p-4">
                   <input
                     type="checkbox"
                     checked={selectedRows.has(row.id)}
                     onChange={() => handleRowSelect(row.id)}
                     className="text-blue-600 rounded focus:ring-blue-500"
                   />
-                </td>
+                </td>}
                 {columns.map(column => (
                   <td
                     key={String(column.key)}

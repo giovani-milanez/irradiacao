@@ -1,10 +1,17 @@
 import axios from 'axios';
 import { deleteCookie, getCookie } from 'cookies-next';
+import { unstable_noStore as noStore } from 'next/cache';
 
 // Axios Interceptor Instance
-const AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080'
-});
+
+const getInstance = () => {
+  noStore();
+  return axios.create({
+    baseURL: process.env.NEXT_PUBLIC_API_URL
+  })
+
+}
+const AxiosInstance = getInstance()
 
 AxiosInstance.interceptors.request.use(
   (config) => {

@@ -1,7 +1,10 @@
-FROM golang:1.21.0 as builder
+FROM golang:1.23 as builder
 
 ARG CGO_ENABLED=0
 # Set destination for COPY
+RUN apt-get update && apt-get install -y ca-certificates openssl
+
+ARG cert_location=/usr/local/share/ca-certificates
 WORKDIR /app
 
 # Download Go modules
@@ -20,5 +23,6 @@ RUN go build -o server
 
 FROM scratch
 COPY --from=builder /app/server /server
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 EXPOSE 8080
 ENTRYPOINT ["/server"]

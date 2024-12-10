@@ -203,15 +203,15 @@ const PatientTable = ({ patients, onAdded }: { patients: Patient[], onAdded: () 
                           <path
                             d="M16.023 9c0 3.866-3.133 7-7 7s-7-3.134-7-7 3.133-7 7-7c2.572 0 4.812 1.4 5.92 3.456"
                             fill="none"
-                            stroke-width="2"
-                            stroke-linecap="round"
+                            strokeWidth="2"
+                            strokeLinecap="round"
                             className="stroke-current"
                           />
                           <path
                             d="M16 2v4h-4"
                             fill="none"
-                            stroke-width="2"
-                            stroke-linecap="round"
+                            strokeWidth="2"
+                            strokeLinecap="round"
                             className="stroke-current"
                           />
                         </svg>

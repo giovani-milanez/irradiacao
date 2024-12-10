@@ -6,7 +6,7 @@ import axios, { AxiosError } from 'axios';
 import ApiError from '@/types/api-error';
 
 const LoginComponent: React.FC = () => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
   const [name, setName] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)

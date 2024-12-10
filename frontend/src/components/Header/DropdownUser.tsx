@@ -2,7 +2,8 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import ClickOutside from "@/components/ClickOutside";
-import useAuth from "@/pages/use-auth";
+import { useAuth } from "@/utils/use-auth";
+
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);

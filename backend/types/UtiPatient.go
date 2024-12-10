@@ -22,6 +22,11 @@ type UtiPatient struct {
 	Position     null.Int32  `json:"position"`
 	Joined       null.Time   `json:"joined"`
 	QueueSize    int         `json:"queue_size"`
+
+	// user
+	UserName   null.String `json:"user_name"`
+	UserEmail  null.String `json:"user_email"`
+	UserAvatar null.String `json:"user_avatar"`
 }
 
 type QueueInfo struct {

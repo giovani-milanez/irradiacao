@@ -24,7 +24,7 @@ func (r *UserRepository) runSelect(c context.Context, query string, args ...any)
 	users := []types.User{}
 	for rows.Next() {
 			var u types.User
-			if err := rows.Scan(&u.Id, &u.Name, &u.Email, &u.Member, &u.Admin, &u.Avatar); err != nil {
+			if err := rows.Scan(&u.Id, &u.Name, &u.Email, &u.Member, &u.Admin, &u.Avatar, &u.Created); err != nil {
 				return []types.User{}, err
 			}
 			users = append(users, u)
@@ -61,7 +61,7 @@ func (r *UserRepository) FindByEmail(c context.Context, email string) (types.Use
 }
 func (r *UserRepository) Create(c context.Context, user types.User) (types.User, error) {
 	var id int
-	err := r.DB.QueryRowContext(c, "INSERT INTO users (name, email, member, admin, avatar) VALUES ($1, $2, $3, $4, $5) RETURNING id", user.Name, user.Email, user.Member, user.Admin, user.Avatar).Scan(&id)
+	err := r.DB.QueryRowContext(c, "INSERT INTO users (name, email, member, admin, avatar, created) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id", user.Name, user.Email, user.Member, user.Admin, user.Avatar, user.Created).Scan(&id)
 	
 	if err != nil {
 		return types.User{}, err

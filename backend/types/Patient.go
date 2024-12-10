@@ -16,10 +16,12 @@ type Patient struct {
 	Deleted  bool          `json:"deleted"`
 	Expired  bool          `json:"expired"`
 	SessionCount int       `json:"session_count"`
-	LastSession null.Time  `json:"last_session"`
+	LastSession null.Time  `json:"last_session"`	
+
+	UserName   null.String `json:"user_name"`
+	UserEmail  null.String `json:"user_email"`
+	UserAvatar null.String `json:"user_avatar"`
 }
-
-
 
 type IPatientService interface {
 	FindAll(c context.Context) ([]Patient, error)

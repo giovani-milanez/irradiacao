@@ -11,6 +11,9 @@ type UtiPatient = {
   position: number | null
   joined: string | null
   queue_size: number
+  user_name: string | null
+  user_email: string | null
+  user_avatar: string | null
 }
 
 export default UtiPatient

@@ -25,7 +25,7 @@ export default function SessoesPage() {
   }
 
   const newClick = () => {
-    router.push('/sessoes/novo')
+    router.push('/admin/sessoes/novo')
   }
   const deleteClick = (id: number) => {
     AxiosInstance.delete(`/api/session/${id}`).then(r => {
@@ -39,11 +39,11 @@ export default function SessoesPage() {
   }
 
   const rowClick = (id: number) => {
-    router.push(`/sessoes/ver/${id}`)
+    router.push(`/admin/sessoes/ver/${id}`)
   }
 
   const editClick = (id: number) => {
-    router.push(`/sessoes/editar/${id}`)
+    router.push(`/admin/sessoes/editar/${id}`)
   }
 
   useEffect(() => {

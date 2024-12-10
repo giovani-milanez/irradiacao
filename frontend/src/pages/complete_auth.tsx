@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { setCookie } from 'cookies-next/client';
 import { useRouter } from 'next/router'
 import { hasCookie } from 'cookies-next';
-import useAuth from './use-auth';
+import { useAuth } from '../utils/use-auth';
 
 function parseJwt(token: string) {
   if (!token) { return; }
@@ -27,7 +27,7 @@ export default function AuthPage() {
       const decoded = parseJwt(tokenParam);
       console.log('setUser on auth')
       console.log(decoded)
-      setUser({ id: Number(decoded.sub ?? 0), admin: decoded.admin, avatar: decoded.avatar, email: decoded.email, member: decoded.member, name: decoded.name })
+      setUser({ id: Number(decoded.sub ?? 0), admin: decoded.admin, avatar: decoded.avatar, email: decoded.email, member: decoded.member, name: decoded.name, created: '' })
 
       router.push('/dashboard')
     } else if (hasCookie('accessToken')) {

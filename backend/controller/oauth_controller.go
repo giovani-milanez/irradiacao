@@ -5,6 +5,7 @@ import (
 	"api/utils"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -69,6 +70,7 @@ func (pc *OAuthController) Callback(c *gin.Context) {
 
 	user, err := gothic.CompleteUserAuth(c.Writer, c.Request)
 	if err != nil {
+		log.Printf("err %s", err.Error())
 		c.Redirect(http.StatusTemporaryRedirect, "/")
 		return
 	}
@@ -76,13 +78,15 @@ func (pc *OAuthController) Callback(c *gin.Context) {
 	if err != nil { c.Error(err);	return }
 	
 	age := int(pc.validity.Seconds())
-	c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%s/auth?token=%s&age=%d", pc.frontendUrl, token, age))
+	url := fmt.Sprintf("%s/complete_auth?token=%s&age=%d", pc.frontendUrl, token, age)
+	log.Printf("returning to %s", url)
+	c.Redirect(http.StatusTemporaryRedirect, url)
 }
 
 func (pc *OAuthController) tokenFromGoth(c *gin.Context, user goth.User) (string, error) {
 	u, err := pc.repo.FindByEmail(c, user.Email)
 	if errors.Is(err, types.ErrNotFound) {		
-		u = types.User{ Name: user.Name, Email: user.Email, Member: false, Admin: false, Avatar: user.AvatarURL }
+		u = types.User{ Name: user.Name, Email: user.Email, Member: false, Admin: false, Avatar: user.AvatarURL, Created: time.Now().UTC() }
 		u, err = pc.repo.Create(c, u)
 		if err != nil {
 			return "", err

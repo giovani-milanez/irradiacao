@@ -6,10 +6,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_API_URL=http://192.168.3.90:8080
     depends_on:
       - goapp
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
   goapp:
     container_name: goapp
     build:
@@ -21,6 +21,8 @@ services:
       - '8080:8080'
     depends_on:
       - db
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
   db:
     container_name: db
     image: postgres:13
@@ -32,6 +34,20 @@ services:
       - 5432:5432
     volumes:
       - pgdata:/var/lib/postgresql/data
-
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
+  web:
+    build: ./nginx
+    volumes:
+      - type: bind
+        source: ./nginx/nginx.conf
+        target: /etc/nginx/conf.d/default.conf
+        read_only: true
+    ports:
+      - "80:80"
+    depends_on:
+      - goapp
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
 volumes:
   pgdata: {}
