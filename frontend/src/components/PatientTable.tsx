@@ -105,7 +105,7 @@ const PatientTable = ({ patients, onAdded }: { patients: Patient[], onAdded: () 
                 Nome
               </th>
               <th className="px-4 py-4 font-medium text-black dark:text-white">
-                Status
+                Validade
               </th>
               <th className="px-4 py-4 font-medium text-black dark:text-white">
                 Irradiações Recebidas
@@ -128,19 +128,19 @@ const PatientTable = ({ patients, onAdded }: { patients: Patient[], onAdded: () 
                 </td>
                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                   <p
-                    className={`inline-flex min-w-${patientItem.expired ? '20' : '35'} rounded-full bg-opacity-10 px-3 py-1 text-sm font-medium ${!patientItem.expired
+                    className={`inline-flex text-center min-w-${patientItem.expired ? '20' : '35'} rounded-full bg-opacity-10 px-3 py-1 text-sm font-medium ${!patientItem.expired
                       ? "bg-success text-success"
                       : "bg-danger text-danger"
                       }`}
                   >
-                    {!patientItem.expired ? `Válido por ${getDaysDiff(patientItem.validity)}` : 'Expirado'}
+                    {!patientItem.expired ? `${getDaysDiff(patientItem.validity)}` : 'Expirado'}
                   </p>
                 </td>
                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                   {patientItem.session_count}
                 </td>
                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                  {patientItem.last_session ? new Date(patientItem.last_session).toLocaleString('pt-BR') : '-'}
+                  {patientItem.last_session ? new Date(patientItem.last_session).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '-'}
                 </td>
                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                   <div className="flex items-center space-x-3.5">

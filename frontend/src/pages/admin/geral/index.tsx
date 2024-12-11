@@ -55,15 +55,15 @@ export default function GeralPage() {
     },
     { key: 'name', label: 'Nome', sortable: true },
     {
-      key: 'validity', label: 'Status', sortable: true, render(value, row) {
+      key: 'validity', label: 'Validade', sortable: true, render(value, row) {
         return (<div>
           <p
-            className={`inline-flex min-w-${row.expired ? '20' : '35'} rounded-full bg-opacity-10 px-3 py-1 text-sm font-medium ${!row.expired
+            className={`inline-flex text-center min-w-${row.expired ? '20' : '35'} rounded-full bg-opacity-10 px-3 py-1 text-sm font-medium ${!row.expired
               ? "bg-success text-success"
               : "bg-danger text-danger"
               }`}
           >
-            {!row.expired ? `Válido por ${getDaysDiff(row.validity)}` : 'Expirado'}
+            {!row.expired ? `${getDaysDiff(row.validity)}` : 'Expirado'}
           </p>
         </div>)
       }
@@ -71,7 +71,7 @@ export default function GeralPage() {
     { key: 'session_count', label: '# Irradiações', sortable: true },
     {
       key: 'last_session', label: 'Última Irradiação', sortable: true, render(value, row) {
-        return (row.last_session ? new Date(row.last_session).toLocaleString('pt-BR') : '-')
+        return (row.last_session ? new Date(row.last_session).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '-')
       },
     },
     {

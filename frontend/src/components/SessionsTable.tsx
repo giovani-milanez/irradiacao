@@ -77,7 +77,7 @@ const SessionsTable = (
                 </td>
                 <td
                   className="border-b border-[#eee] px-4 py-5 pl-9 dark:border-strokedark xl:pl-11">
-                  {new Date(sessionItem.date).toLocaleString('pt-BR')}
+                  {new Date(sessionItem.date).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
                 </td>
                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                   {sessionItem.place}

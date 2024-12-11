@@ -105,7 +105,7 @@ export default function ListaIntensivaPage() {
     { key: 'session_count', label: '# Irradiações', sortable: true },
     {
       key: 'last_session', label: 'Última Irradiação', sortable: true, render(value, row) {
-        return (row.last_session ? new Date(row.last_session).toLocaleString('pt-BR') : '-')
+        return (row.last_session ? new Date(row.last_session).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '-')
       },
     },
     {

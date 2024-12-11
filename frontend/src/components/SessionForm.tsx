@@ -16,12 +16,12 @@ const columns: Column<Patient>[] = [
   {
     key: 'validity', label: 'Validade', sortable: true, render(value, row) {
       return (<p
-        className={`inline-flex min-w-${row.expired ? '20' : '35'} rounded-full bg-opacity-10 px-3 py-1 text-sm font-medium ${!row.expired
+        className={`inline-flex text-center min-w-${row.expired ? '20' : '35'} rounded-full bg-opacity-10 px-3 py-1 text-sm font-medium ${!row.expired
           ? "bg-success text-success"
           : "bg-danger text-danger"
           }`}
       >
-        {!row.expired ? `Válido por ${getDaysDiff(row.validity)}` : 'Expirado'}
+        {!row.expired ? `${getDaysDiff(row.validity)}` : 'Expirado'}
       </p>)
       // return !row.expired ? `Válido por ${getDaysDiff(row.validity)}` : 'Expirado'    
     },

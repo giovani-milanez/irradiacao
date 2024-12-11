@@ -61,7 +61,7 @@ export default function UsersPage() {
     },
     {
       key: 'created', label: 'Criado', sortable: true, render(value, row) {
-        return (row.created ? new Date(row.created).toLocaleString('pt-BR') : '-')
+        return (row.created ? new Date(row.created).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '-')
       },
     },
     {

@@ -91,7 +91,7 @@ const UtiTable = (
                   {patientItem.session_count}
                 </td>
                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                  {patientItem.last_session ? new Date(patientItem.last_session).toLocaleString('pt-BR') : '-'}
+                  {patientItem.last_session ? new Date(patientItem.last_session).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '-'}
                 </td>
                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark" onClick={(evt) => { evt.preventDefault() }}>
                   <div className="flex items-center space-x-3.5">
