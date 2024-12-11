@@ -91,7 +91,7 @@ func (pc *OAuthController) tokenFromGoth(c *gin.Context, user goth.User) (string
 		if err != nil {
 			return "", err
 		}
-		patient := types.Patient{ IdUser: null.Int32From(int32(u.Id)),  Name: user.Name, Validity: time.Now().Add(time.Hour * 24 * 14).UTC(), Created: time.Now().UTC(), Deleted: false }
+		patient := types.Patient{ IdUser: null.Int32From(int32(u.Id)),  Name: user.Name, Validity: time.Now().Add(time.Hour * 24 * 30).UTC(), Created: time.Now().UTC(), Deleted: false }
 		pc.pRepo.Create(c, patient)		
 	} else if err != nil {
 		return "", err
