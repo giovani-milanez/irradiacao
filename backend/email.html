@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notificação de Irradiação Energética</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      background-color: #4a90e2;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+
+    .content {
+      background-color: #f4f4f4;
+      padding: 20px;
+      border-radius: 5px;
+    }
+
+    .names-list {
+      background-color: #e6f2ff;
+      padding: 15px;
+      border-radius: 5px;
+    }
+
+    .names-list ul {
+      margin: 0;
+      padding-left: 20px;
+      list-style-type: circle;
+    }
+
+    .names-list li {
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 0.8em;
+      color: #777;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <h1>Comunidade da Ação</h1>
+  </div>
+
+  <div class="content">
+    <p>Olá {{.Nome}},</p>
+    <p>Informamos que foi realizada a sessão de Irradiação energética em {{.Data}}</p>
+
+    {{if .HasGeral}}
+    <p><strong>Irradiação Geral</strong></p>
+    <div class="names-list">
+      <ul>
+        {{range .Geral}}
+        <li>{{.}}</li>
+        {{end}}
+      </ul>
+    </div>
+    {{end}}
+
+    {{if .HasUti}}
+    <p><strong>Irradiação Intensiva</strong></p>
+    <div class="names-list">
+      <ul>
+        {{range .Uti}}
+        <li>{{.}}</li>
+        {{end}}
+      </ul>
+    </div>
+    {{end}}
+
+    <p>Os membros da comunidade agradecem.</p>
+  </div>
+
+  <div class="footer">
+    <p>© 2024 Comunidade da Ação | Grupo Irradiação</p>
+  </div>
+</body>
+
+</html>

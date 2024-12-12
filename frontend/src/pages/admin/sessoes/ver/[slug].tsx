@@ -263,7 +263,7 @@ export default function ViewSessionsPage() {
             </div>) : (<div><span className="inline-block rounded bg-meta-3/[0.08] px-2.5 py-1 text-sm font-medium text-meta-3">Finalizada</span></div>)}
           </div>
           <Tabs tabs={tabItems} />
-          <Modal showModal={showModal} loading={loading} title='Confirmar' saveText='Sim, excluir' onClose={() => { setShowModal(false) }} onAccept={fisnishSession}>
+          <Modal showModal={showModal} loading={loading} title='Confirmar' saveText='Sim, finalizar' onClose={() => { setShowModal(false) }} onAccept={fisnishSession}>
             <p> Os nomes do tratamento intensivo serão removidos da fila. </p>
             <p> Deseja finalizar a sesão ? </p>
           </Modal>

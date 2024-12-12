@@ -154,3 +154,59 @@ func (r *SessionRepository) UpdateMembers(c context.Context,id int, members []in
 	_, err = r.DB.ExecContext(c, sql)
 	return err
 }
+
+func (r *SessionRepository) GetPatientsById(c context.Context, id int) ([]types.Patient, error) {
+	query := fmt.Sprintf(`
+	SELECT p."name" AS patient, u."name", u.email FROM sessions s
+	JOIN patients_session ps ON ps.id_session = s.id
+	JOIN patients p ON p.id = ps.id_patient
+	JOIN users u ON u.id = p.id_user
+	WHERE s.id = %d`, id)
+
+	rows, err := r.DB.QueryContext(c, query)
+	if err != nil {
+		return []types.Patient{}, err
+	}
+	defer rows.Close()
+
+	users := []types.Patient{}
+	for rows.Next() {
+			var u types.Patient
+			if err := rows.Scan(&u.Name, &u.UserName, &u.UserEmail); err != nil {
+				return []types.Patient{}, err
+			}
+			users = append(users, u)
+	}
+	if err := rows.Err(); err != nil {
+		return []types.Patient{}, err
+	}
+	return users, nil
+}
+
+func (r *SessionRepository) GetUtiById(c context.Context, id int) ([]types.UtiPatient, error) {
+	query := fmt.Sprintf(`
+	SELECT up."name" AS patient, u."name", u.email FROM sessions s
+	JOIN uti_session us ON us.id_session = s.id
+	JOIN uti_patients up ON up.id = us.id_uti
+	JOIN users u ON u.id = up.id_user
+	WHERE s.id = %d`, id)
+
+	rows, err := r.DB.QueryContext(c, query)
+	if err != nil {
+		return []types.UtiPatient{}, err
+	}
+	defer rows.Close()
+
+	users := []types.UtiPatient{}
+	for rows.Next() {
+			var u types.UtiPatient
+			if err := rows.Scan(&u.Name, &u.UserName, &u.UserEmail); err != nil {
+				return []types.UtiPatient{}, err
+			}
+			users = append(users, u)
+	}
+	if err := rows.Err(); err != nil {
+		return []types.UtiPatient{}, err
+	}
+	return users, nil
+}

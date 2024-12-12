@@ -5,6 +5,8 @@ import (
 	"api/middleware"
 	"api/repository"
 	"api/service"
+	"api/types"
+	
 	"strconv"
 	"time"
 
@@ -18,6 +20,22 @@ import (
 )
 
 func main() {
+
+
+	emailChan := make(chan []types.EmailMessage)
+
+	port, _ := strconv.Atoi(os.Getenv("EMAIL_PORT"))
+	emailService := service.EmailService{
+		Messages: emailChan,
+		Host: os.Getenv("EMAIL_HOST"),
+		Port: port,
+		Username: os.Getenv("EMAIL_USERNAME"),
+		Password: os.Getenv("EMAIL_PASSWORD"),
+		From: os.Getenv("EMAIL_FROM"),
+	}
+	
+	go emailService.Run()
+	
 	 // connect to database
 	 url := os.Getenv("DATABASE_URL")
 	 db, err := sql.Open("postgres", url)
@@ -43,7 +61,7 @@ func main() {
 	pc := controller.NewPatientController(service.NewPatientService(pRepo))
 	gc := controller.NewOAuthController(userRepo, pRepo, []byte(key), time.Hour * 24 * time.Duration(validity), os.Getenv("GOOGLE_CLIENT_ID"), os.Getenv("GOOGLE_CLIENT_SECRET"), os.Getenv("FACEBOOK_CLIENT_ID"), os.Getenv("FACEBOOK_CLIENT_SECRET"), os.Getenv("BACKEND_URL"), os.Getenv("FRONTEND_URL"))
 	uc := controller.NewUtiPatientController(service.NewUtiPatientService(uRepo, qRepo))
-	sc := controller.NewSessionController(service.NewSessionService(sRepo, pRepo, uRepo, userRepo, qRepo))
+	sc := controller.NewSessionController(service.NewSessionService(sRepo, pRepo, uRepo, userRepo, qRepo, emailChan))
 	mc := controller.NewMembersController(service.NewMemberService(mRepo))
 
 	router := gin.Default()	

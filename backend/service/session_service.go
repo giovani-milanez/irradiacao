@@ -3,7 +3,10 @@ package service
 import (
 	"api/dto"
 	"api/types"
+	"api/utils"
 	"context"
+	"fmt"
+	"time"
 )
 
 type SessionService struct {
@@ -12,10 +15,11 @@ type SessionService struct {
 	ut_repo types.IUtiPatientRepository
 	u_repo types.IUserRepository
 	q_repo types.IUtiQueueRepository
+	mChan chan []types.EmailMessage
 }
 
-func NewSessionService(s_repo types.ISessionRepository, p_repo types.IPatientRepository, ut_repo types.IUtiPatientRepository, u_repo types.IUserRepository, qRepo types.IUtiQueueRepository) *SessionService {
-	return &SessionService{s_repo: s_repo, p_repo: p_repo, ut_repo: ut_repo, u_repo: u_repo, q_repo: qRepo}
+func NewSessionService(s_repo types.ISessionRepository, p_repo types.IPatientRepository, ut_repo types.IUtiPatientRepository, u_repo types.IUserRepository, qRepo types.IUtiQueueRepository, mChan chan []types.EmailMessage) *SessionService {
+	return &SessionService{s_repo: s_repo, p_repo: p_repo, ut_repo: ut_repo, u_repo: u_repo, q_repo: qRepo, mChan: mChan}
 }
 
 func (ss *SessionService) FindAll(c context.Context) ([]types.Session, error) {
@@ -137,5 +141,62 @@ func (ss *SessionService) Finish(c context.Context, id int) error {
 		_ = ss.q_repo.LeaveQueue(c, u.ID)
 	}
 
-	return ss.q_repo.FixupQueuePositions(c)
+	err = ss.q_repo.FixupQueuePositions(c)
+	go ss.BuildEmail(context.WithoutCancel(c), s)
+
+	return err
+}
+
+func (ss *SessionService) BuildEmail(c context.Context, session types.Session) error {
+	patients, err := ss.s_repo.GetPatientsById(c, session.Id)
+	if err != nil { return err }
+	utis, err := ss.s_repo.GetUtiById(c, session.Id)
+	if err != nil { return err }
+
+	loc, _ := time.LoadLocation("America/Sao_Paulo")
+	dataStr := session.Date.In(loc).Format("02/01/2006 15:04")
+
+	emails := map[string]*types.EmailData{}
+	for _, p := range patients {
+		data, ok := emails[p.UserEmail.String]
+		if !ok {
+			ndata := types.EmailData{}
+			ndata.Data = dataStr
+			ndata.Nome = p.UserName.String
+			ndata.HasGeral = true
+			ndata.Geral = []string{ p.Name }
+			ndata.Uti = []string{ }
+			emails[p.UserEmail.String] = &ndata
+		} else {
+			data.Geral = append(data.Geral, p.Name)
+		}
+	}
+	for _, p := range utis {
+		data, ok := emails[p.UserEmail.String]
+		if !ok {
+			ndata := types.EmailData{}
+			ndata.Data = dataStr
+			ndata.Nome = p.UserName.String
+			ndata.HasUti = true
+			ndata.Uti = []string{ p.Name }
+			emails[p.UserEmail.String] = &ndata
+		} else {
+			data.HasUti = true
+			data.Uti = append(data.Uti, p.Name)
+		}
+	}
+
+	messages := []types.EmailMessage{}
+	for k,v := range emails {
+		body, err := utils.LoadTemplate(*v)
+		if err != nil {
+			fmt.Println("Template error ", err)
+			continue
+		}
+		messages = append(messages, types.EmailMessage{ To: []string{k}, Subject: "Irradiacao Recebida!", BodyType: "text/html", Body: body})
+	}
+	
+	ss.mChan <- messages
+	
+	return nil
 }

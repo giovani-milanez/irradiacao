@@ -33,7 +33,9 @@ type ISessionRepository interface {
 
 	UpdatePatients(c context.Context, id int, patients []int) error
 	UpdateUtis(c context.Context,id int, patients []int) error
-	UpdateMembers(c context.Context,id int, members []int) error
+	UpdateMembers(c context.Context, id int, members []int) error
+	GetPatientsById(c context.Context, id int) ([]Patient, error)
+	GetUtiById(c context.Context, id int) ([]UtiPatient, error)
 }
 
 type ISessionService interface {

@@ -5,11 +5,17 @@ import { useRouter } from 'next/router'
 import { hasCookie } from 'cookies-next';
 import { useAuth } from '../utils/use-auth';
 
+function b64DecodeUnicode(str: string) {
+  return decodeURIComponent(atob(str).split('').map(function (c) {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+}
+
 function parseJwt(token: string) {
   if (!token) { return; }
   const base64Url = token.split('.')[1];
   const base64 = base64Url.replace('-', '+').replace('_', '/');
-  return JSON.parse(window.atob(base64));
+  return JSON.parse(b64DecodeUnicode(base64));
 }
 
 export default function AuthPage() {
