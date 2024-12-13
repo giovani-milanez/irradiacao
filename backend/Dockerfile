@@ -23,6 +23,7 @@ RUN go build -o server
 
 FROM scratch
 COPY --from=builder /app/server /server
+COPY --from=builder /app/email.html /email.html
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /usr/local/go/lib/time/zoneinfo.zip /
 ENV ZONEINFO=/zoneinfo.zip
