@@ -153,8 +153,14 @@ func (ss *SessionService) BuildEmail(c context.Context, session types.Session) e
 	utis, err := ss.s_repo.GetUtiById(c, session.Id)
 	if err != nil { return err }
 
-	loc, _ := time.LoadLocation("America/Sao_Paulo")
-	dataStr := session.Date.In(loc).Format("02/01/2006 15:04")
+	loc, err := time.LoadLocation("America/Sao_Paulo")
+	var dataStr string
+	if err == nil {
+		dataStr = session.Date.In(loc).Format("02/01/2006 15:04")
+	} else {
+		fmt.Println("error loading location")
+		dataStr = session.Date.Format("02/01/2006 15:04")
+	}
 
 	emails := map[string]*types.EmailData{}
 	for _, p := range patients {
