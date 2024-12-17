@@ -18,7 +18,7 @@ export default function ViewSessionsPage() {
   const [members, setMembers] = useState<Member[]>()
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
-  const [fullScreen, setFullScreen] = useState(true)
+  const [fullScreen, setFullScreen] = useState(false)
   const [fontSize, setFontSize] = useState("lg")
 
   const fisnishSession = () => {
