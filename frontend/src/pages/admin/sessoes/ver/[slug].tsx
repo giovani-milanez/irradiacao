@@ -6,11 +6,10 @@ import Tabs, { TabItem } from "@/components/Tabs";
 import Member from "@/types/member";
 import Session from "@/types/Session";
 import AxiosInstance from "@/utils/axiosInstance";
+import { MaximizeIcon, MinimizeIcon } from "@/utils/icons";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { MaximizeIcon, MinimizeIcon } from "./icons";
-// import Image from "next/image";
 
 
 export default function ViewSessionsPage() {
