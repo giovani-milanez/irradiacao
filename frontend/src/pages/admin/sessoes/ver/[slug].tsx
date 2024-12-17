@@ -9,6 +9,7 @@ import AxiosInstance from "@/utils/axiosInstance";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { MaximizeIcon, MinimizeIcon } from "./icons";
 // import Image from "next/image";
 
 
@@ -18,6 +19,8 @@ export default function ViewSessionsPage() {
   const [members, setMembers] = useState<Member[]>()
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
+  const [fullScreen, setFullScreen] = useState(true)
+  const [fontSize, setFontSize] = useState("lg")
 
   const fisnishSession = () => {
     AxiosInstance.post(`/api/session/${data?.id}/finish`).then(r => {
@@ -30,78 +33,6 @@ export default function ViewSessionsPage() {
     }).catch(() => toast.error('Ocorreu um erro, tente novamente')).finally(() => { setShowModal(false) })
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const InfoComponent = () => {
-    return (
-      <div className="">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">{data?.title}</h1>
-          <p className="text-gray-600 mb-4">{data?.desc}</p>
-
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="mr-2 text-blue-500" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 10c0 6-8 0-8 8H8.5M8 10c0 6 8 0 8 8h3.5m.5-8a8 8 0 1 0-16 0 8 8 0 0 0 16 0Z" />
-              </svg>
-              <span>Local: {data?.place}</span>
-            </div>
-            <div className="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="mr-2 text-green-500" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-              </svg>
-              <span>{formatDate(data?.date || "")}</span>
-            </div>
-            <div className="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="mr-2 text-purple-500" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
-              <span>Geral: {data?.patients_count}</span>
-            </div>
-            <div className="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="mr-2 text-red-500" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <polyline points="16 11 18 13 22 9" />
-              </svg>
-              <span>Intensivo: {data?.uti_count}</span>
-            </div>
-            <div className="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="mr-2 text-blue-500" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
-              <span>Membros: {members?.length}</span>
-            </div>
-          </div>
-          {/* <div className="flex justify-center">
-            <Image
-              width={640}
-              height={737}
-              src={"/images/ave.jpg"}
-              alt="Logo"
-            />
-          </div> */}
-        </div>
-      </div>
-    )
-  }
 
   const GeralComponent = () => {
     return (<div className="mb-6">
@@ -116,7 +47,7 @@ export default function ViewSessionsPage() {
               key={patient.id}
               className="bg-gray-50 p-4 rounded-lg border border-gray-200"
             >
-              <h3 className="text-lg font-medium">{patient.name}</h3>
+              <h3 className={`text-${fontSize} font-medium`}>{patient.name}</h3>
             </div>
           ))}
         </div>
@@ -157,7 +88,7 @@ export default function ViewSessionsPage() {
               className="bg-gray-50 p-4 rounded-lg border border-gray-200"
             >
               <div>
-                <h3 className="text-lg font-medium">{patient.name}</h3>
+                <h3 className={`text-${fontSize} font-medium`}>{patient.name}</h3>
                 {new Date(patient.birthday.slice(0, -1)).toLocaleDateString('pt-BR')}
               </div>
             </div>
@@ -174,19 +105,20 @@ export default function ViewSessionsPage() {
     </div>)
   }
 
-  const AveMaria = () => {
-    return (<div className="mb-2">
-      <h1 className="text-2xl font-bold text-center text-blue-700 mb-2">AVE MARIA MÂNTRICA</h1>
-      <p className="text-xl text-gray-800 text-center leading-relaxed ">
+  const AveMaria = ({ vertical }: { vertical: boolean }) => {
+
+    return (<div className={`p-2 mb-2 ${vertical ? 'mt-20' : ''}`}>
+      <h1 className={`text-2xl font-bold text-center text-blue-700 mb-2 ${vertical ? 'mb-15' : ''}`}>AVE MARIA MÂNTRICA</h1>
+      <p className={`text-xl text-gray-800 text-center leading-relaxed ${vertical ? 'mb-10' : ''}`}>
         AVE MARIA, CHEIA DE GRAÇA, O SENHOR É CONVOSCO.
       </p>
-      <p className="text-xl text-gray-800 text-center leading-relaxed ">
+      <p className={`text-xl text-gray-800 text-center leading-relaxed ${vertical ? 'mb-10' : ''}`}>
         BENDITA SOIS VÓS ENTRE AS MULHERES, E BENDITO É O FRUTO DE VOSSO VENTRE JESUS.
       </p>
-      <p className="text-xl text-gray-800 text-center leading-relaxed ">
+      <p className={`text-xl text-gray-800 text-center leading-relaxed ${vertical ? 'mb-10' : ''}`}>
         SANTA MARIA, MÃE DE DEUS, ROGAI POR NÓS FILHOS E FILHAS DE DEUS,
       </p>
-      <p className="text-xl text-gray-800 text-center leading-relaxed">
+      <p className={`text-xl text-gray-800 text-center leading-relaxed ${vertical ? 'mb-10' : ''}`}>
         AGORA E NA HORA DA NOSSA VITÓRIA, SOBRE O PECADO, A DOENÇA E A MORTE.
       </p>
     </div>)
@@ -204,7 +136,7 @@ export default function ViewSessionsPage() {
               key={member.id}
               className="bg-gray-50 p-4 rounded-lg border border-gray-200"
             >
-              <h3 className="text-lg font-medium">{member.name}</h3>
+              <h3 className={`text-${fontSize} font-medium`}>{member.name}</h3>
             </div>
           ))}
         </div>
@@ -213,7 +145,7 @@ export default function ViewSessionsPage() {
   }
 
   const tabItems: TabItem[] = [
-    { label: 'Dados', content: InfoComponent, },
+    // { label: 'Dados', content: InfoComponent, },
     { label: 'Geral', content: GeralComponent },
     { label: 'Intensiva', content: IntensiveComponent },
     { label: 'Local', content: LocalComponent },
@@ -243,32 +175,67 @@ export default function ViewSessionsPage() {
   //   router.back()
   // }
 
-  return (<DefaultLayout>
-    {loading ? <LoadingSpinner></LoadingSpinner> :
-      data != undefined ?
-        <div className="">
-          <div className="grid grid-cols-6">
-            <div className={`col-span-5`}>
-              <AveMaria></AveMaria>
-            </div>
-            {!data?.done ? (<div className="flex items-end mb-2">
-              <button
-                onClick={() => { setShowModal(true) }}
-                disabled={loading}
-                className={"rounded-md w-full border border-primary py-2 text-center font-medium text-primary hover:bg-opacity-90 lg:px-8 xl:px-10"}>
-                <span className="">
-                  Finalizar Sessão
-                </span>
-              </button>
-            </div>) : (<div><span className="inline-block rounded bg-meta-3/[0.08] px-2.5 py-1 text-sm font-medium text-meta-3">Finalizada</span></div>)}
+  const fScreen = () => {
+    return (
+      <div>
+        <div className="flex flex-row">
+          <div className="basis-1/5">
+            <AveMaria vertical={true}></AveMaria>
           </div>
-          <Tabs tabs={tabItems} />
-          <Modal showModal={showModal} loading={loading} title='Confirmar' saveText='Sim, finalizar' onClose={() => { setShowModal(false) }} onAccept={fisnishSession}>
-            <p> Os nomes do tratamento intensivo serão removidos da fila. </p>
-            <p> Deseja finalizar a sesão ? </p>
-          </Modal>
+          <div className="basis-4/5">
+            <Tabs tabs={tabItems} onFontChange={setFontSize} />
+          </div>
         </div>
-        : <p>Nao foi possivel carregar</p>}
+        <button
+          onClick={() => { setFullScreen(false) }}
+          className="ml-2 flex items-center justify-center p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+        >
+          <MinimizeIcon></MinimizeIcon>
+          Voltar
+        </button>
+      </div>
+    )
+  }
 
-  </DefaultLayout>)
+  const nScreen = () => {
+    return (<DefaultLayout>
+      <div className="grid grid-cols-6">
+        <div className={`col-span-5`}>
+          <AveMaria vertical={false}></AveMaria>
+        </div>
+        <div>
+          {!data?.done ? (<div className="flex items-end mb-2">
+            <button
+              onClick={() => { setShowModal(true) }}
+              disabled={loading}
+              className={"rounded-md w-full border border-primary py-2 text-center font-medium text-primary hover:bg-opacity-90 lg:px-8 xl:px-10"}>
+              <span className="">
+                Finalizar Sessão
+              </span>
+            </button>
+          </div>) : (<div><span className="inline-block rounded bg-meta-3/[0.08] px-2.5 py-1 text-sm font-medium text-meta-3">Finalizada</span></div>)}
+          <button
+            onClick={() => { setFullScreen(true) }}
+            className="mt-10 flex items-center justify-center p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+          >
+            <MaximizeIcon></MaximizeIcon>
+            Tela cheia
+          </button>
+        </div>
+      </div>
+      <Tabs tabs={tabItems} onFontChange={setFontSize} />
+    </DefaultLayout>)
+  }
+
+  return (<div>
+    {loading ? <DefaultLayout><LoadingSpinner></LoadingSpinner></DefaultLayout> :
+      data != undefined ?
+        fullScreen ? fScreen() : nScreen()
+
+        : <DefaultLayout><p>Nao foi possivel carregar</p></DefaultLayout>}
+    <Modal showModal={showModal} loading={loading} title='Confirmar' saveText='Sim, finalizar' onClose={() => { setShowModal(false) }} onAccept={fisnishSession}>
+      <p> Os nomes do tratamento intensivo serão removidos da fila. </p>
+      <p> Deseja finalizar a sesão ? </p>
+    </Modal>
+  </div>)
 }

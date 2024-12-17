@@ -230,7 +230,6 @@ const PatientTable = ({ patients, onAdded }: { patients: Patient[], onAdded: () 
             </>) : <></>}
           </tbody>
         </table>
-
       </div>
       <Modal showModal={showModal} loading={loading} title='Autorização' saveText='Sim, registrar' onClose={() => { setShowModal(false) }} onAccept={() => { onAccpet() }}>
         <p> Para nomes de terceiros é imprescindível que a pessoa saiba e autorize a energização. </p>
