@@ -7,13 +7,13 @@ export default function UtiForm({ onSave, onCancel, initName, initDesc, initBirt
   const [birth, setBirth] = useState<Date | undefined>(initBirth)
 
   return (<div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-    <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
-      <h3 className="font-medium text-black dark:text-white">
+    <div className="border-b border-stroke px-4 sm:px-6.5 py-4 dark:border-strokedark">
+      <h3 className="text-base sm:text-lg font-medium text-black dark:text-white">
         Tratamento Intensivo
       </h3>
     </div>
     <div>
-      <div className="p-6.5">
+      <div className="p-4 sm:p-6.5">
         <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
           <div className="w-full xl:w-1/2">
             <label className="mb-3 block text-sm font-medium text-black dark:text-white">
@@ -48,7 +48,7 @@ export default function UtiForm({ onSave, onCancel, initName, initDesc, initBirt
             className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
           ></textarea>
         </div>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
 
           <button
             onClick={() => { onCancel() }}

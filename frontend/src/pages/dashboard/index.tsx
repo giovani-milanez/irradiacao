@@ -33,9 +33,9 @@ export default function Dashboard() {
       <DefaultLayout>
         {data != undefined ? (<>
           <Panel title='Irradiação Geral'>
-            <p className='font-light text-xl'>As irradiações ocorrem toda semana e são feitas pelos membros do Grupo de Irradiação da Comunidade da Ação.</p>
-            <p className='pt-1 font-light text-xl'>Todos os nomes aqui colocados irão receber a irradiação já na próxima sessão.</p>
-            <p className='pt-1 font-light text-xl'>Os nomes tem validade de 30 dias ou cerca de 4 irradições, após esse período será necessário renovar a validade para continuar recebendo.</p>
+            <p className='font-light text-base sm:text-lg md:text-xl'>As irradiações ocorrem toda semana e são feitas pelos membros do Grupo de Irradiação da Comunidade da Ação.</p>
+            <p className='pt-1 font-light text-base sm:text-lg md:text-xl'>Todos os nomes aqui colocados irão receber a irradiação já na próxima sessão.</p>
+            <p className='pt-1 font-light text-base sm:text-lg md:text-xl'>Os nomes tem validade de 30 dias ou cerca de 4 irradições, após esse período será necessário renovar a validade para continuar recebendo.</p>
           </Panel>
           <div className='pt-10'>
             <PatientTable patients={data} onAdded={getData}></PatientTable>

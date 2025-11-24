@@ -17,8 +17,8 @@ const SessionsTable = (
     <div className="rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="max-w-full overflow-x-auto">
         <div className="pb-2 border-b">
-          <div className="grid grid-cols-4 gap-2">
-            <div className="col-span-3">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+            <div className="md:col-span-3">
               <h4 className="mb-4 text-xl font-semibold text-black dark:text-white">
                 Lista de sessoes  ({sessions.length})
               </h4>
@@ -29,13 +29,13 @@ const SessionsTable = (
               }}
               disabled={loading}
               className={"font-semibold h-15 bg-indigo-500 text-gray-100 w-full rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"}>
-              <svg className="w-6 h-6 -ml-2" fill="none" stroke="currentColor" strokeWidth="2"
+              <svg className="w-5 h-5 md:w-6 md:h-6 md:-ml-2" fill="none" stroke="currentColor" strokeWidth="2"
                 strokeLinecap="round" strokeLinejoin="round">
                 <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
                 <circle cx="8.5" cy="7" r="4" />
                 <path d="M20 8v6M23 11h-6" />
               </svg>
-              <span className="ml-3">
+              <span className="ml-2 md:ml-3 text-sm md:text-base">
                 Novo
               </span>
             </button>

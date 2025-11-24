@@ -81,12 +81,12 @@ export default function UtiPage() {
     return (
       <DefaultLayout>
         {data != undefined ? (<>
-          <div className="grid grid-cols-4 gap-2">
-            <div className={qInfo ? 'col-span-3' : 'col-span-4'}>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
+            <div className={qInfo ? 'lg:col-span-3' : 'col-span-1 lg:col-span-4'}>
               <Panel title='Irradiação Intensiva'>
-                {/* <p className='font-light text-xl'>As irradiações ocorrem toda semana e são feitas pelos membros do Grupo de Irradiação da Comunidade da Ação.</p> */}
-                <p className='font-light text-xl'>Somente adicione caso a pessoa tenha <b>doença grave</b>.</p>
-                <p className='pt-2 font-light text-xl'>Nesta modalidade são atendidas cerca de 15 pessoas por irradiação.</p>
+                {/* <p className='font-light text-base sm:text-lg md:text-xl'>As irradiações ocorrem toda semana e são feitas pelos membros do Grupo de Irradiação da Comunidade da Ação.</p> */}
+                <p className='font-light text-base sm:text-lg md:text-xl'>Somente adicione caso a pessoa tenha <b>doença grave</b>.</p>
+                <p className='pt-2 font-light text-base sm:text-lg md:text-xl'>Nesta modalidade são atendidas cerca de 15 pessoas por irradiação.</p>
               </Panel>
             </div>
             {qInfo && <QueueInfoComponent info={qInfo}></QueueInfoComponent>}

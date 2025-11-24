@@ -55,7 +55,7 @@ const PatientTable = ({ patients, onAdded }: { patients: Patient[], onAdded: () 
       </h4>
       <div className="max-w-full overflow-x-auto">
         <div className="pt-4 pb-2 border-b">
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
             <input
               type="text"
               placeholder="Nome para irradiação"
@@ -71,7 +71,7 @@ const PatientTable = ({ patients, onAdded }: { patients: Patient[], onAdded: () 
                 setError(event.target.value.includes(','))
                 setName(event.target.value)
               }}
-              className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary col-span-2"
+              className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary md:col-span-2"
             />
             <button
               onClick={() => {
@@ -80,14 +80,14 @@ const PatientTable = ({ patients, onAdded }: { patients: Patient[], onAdded: () 
                 setShowModal(true)
               }}
               disabled={loading || error}
-              className={"font-semibold " + (error ? 'bg-gray-500' : 'bg-indigo-500') + " text-gray-100 w-full rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"}>
-              <svg className="w-6 h-6 -ml-2" fill="none" stroke="currentColor" strokeWidth="2"
+              className={"font-semibold " + (error ? 'bg-gray-500' : 'bg-indigo-500') + " text-gray-100 w-full rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none py-3"}>
+              <svg className="w-5 h-5 md:w-6 md:h-6 md:-ml-2" fill="none" stroke="currentColor" strokeWidth="2"
                 strokeLinecap="round" strokeLinejoin="round">
                 <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
                 <circle cx="8.5" cy="7" r="4" />
                 <path d="M20 8v6M23 11h-6" />
               </svg>
-              <span className="ml-3">
+              <span className="ml-2 md:ml-3 text-sm md:text-base">
                 Registrar
               </span>
             </button>

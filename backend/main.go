@@ -3,6 +3,7 @@ package main
 import (
 	"api/controller"
 	"api/middleware"
+	"api/migration"
 	"api/repository"
 	"api/service"
 	"api/types"
@@ -43,6 +44,17 @@ func main() {
 			log.Fatal(err)
 	 }
 	 defer db.Close()
+
+	 // Run migrations
+	 migrator := migration.NewMigrator(db, "migrations", "data.sql")
+	 if err := migrator.Run(); err != nil {
+			log.Fatalf("Migration failed: %v", err)
+	 }
+
+	 // Run seeds (only on first setup)
+	 if err := migrator.RunSeed(); err != nil {
+			log.Fatalf("Seeding failed: %v", err)
+	 }
 
 	
 	key := os.Getenv("JWT_KEY")

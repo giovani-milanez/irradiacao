@@ -4,6 +4,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://127.0.0.1:8080
     ports:
       - "3000:3000"
     depends_on:
@@ -17,6 +19,19 @@ services:
       dockerfile: Dockerfile
     environment:
       DATABASE_URL: 'postgres://postgres:postgres@db:5432/postgres?sslmode=disable'
+      JWT_KEY: ''
+      JWT_VALIDITY_DAYS: '30'
+      EMAIL_PORT: 465
+      EMAIL_HOST:
+      EMAIL_USERNAME:
+      EMAIL_PASSWORD:
+      EMAIL_FROM:
+      GOOGLE_CLIENT_ID:
+      GOOGLE_CLIENT_SECRET:
+      FACEBOOK_CLIENT_ID:
+      FACEBOOK_CLIENT_SECRET:
+      BACKEND_URL: http://127.0.0.1:8080
+      FRONTEND_URL: http://127.0.0.1:3000
     ports:
       - '8080:8080'
     depends_on:

@@ -162,9 +162,9 @@ function Table<T extends { id: number | string }>({
         </table>
       </div>
 
-      <div className="bg-white px-4 py-3 flex items-center justify-between border-t sm:px-6">
-        <div className="flex-1 flex justify-between items-center">
-          <div>
+      <div className="bg-white px-4 py-3 flex flex-col sm:flex-row items-center justify-between border-t sm:px-6 gap-3">
+        <div className="flex flex-col sm:flex-row flex-1 justify-between items-center w-full gap-3">
+          <div className="flex items-center gap-2">
             <select
               className="px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
               value={rowsPerPage}
@@ -175,9 +175,9 @@ function Table<T extends { id: number | string }>({
               <option value="15">15</option>
               <option value="20">20</option>
             </select>
-            <span className="max-sm:hidden pl-5 text-sm text-gray-700">Registros por página</span>
+            <span className="hidden md:inline text-sm text-gray-700">Registros por página</span>
           </div>
-          <span className="pl-5 text-sm text-gray-700">
+          <span className="text-sm text-gray-700 text-center">
             Selecionados <span className="font-medium">{selectedRows.size}</span> de <span className="font-medium">{data.length}</span> items
           </span>
 
