@@ -19,19 +19,25 @@ echo "### Waiting for backend services to be ready ..."
 sleep 10
 
 echo "### Stopping any running web container ..."
-docker compose stop web
-docker compose rm -f web
+docker compose stop web 2>/dev/null || true
+docker compose rm -f web 2>/dev/null || true
 
 echo "### Switching to temporary nginx config (no SSL) ..."
 # Backup the current config and use the init config
-cp ./nginx/nginx.conf ./nginx/nginx.conf.backup
+if [ ! -f ./nginx/nginx.conf.backup ]; then
+  cp ./nginx/nginx.conf ./nginx/nginx.conf.backup
+fi
 cp ./nginx/nginx-init.conf ./nginx/nginx.conf
 
-echo "### Starting nginx with temporary config ..."
-docker compose up -d web
+echo "### Recreating nginx container with temporary config ..."
+docker compose up -d --force-recreate web
 
 echo "### Waiting for nginx to be ready ..."
-sleep 5
+sleep 8
+
+echo "### Checking nginx status ..."
+docker compose ps web
+docker compose logs --tail=20 web
 
 echo "### Testing if nginx is accessible ..."
 docker compose exec web curl -s http://localhost/.well-known/acme-challenge/test || echo "Note: Test request to nginx completed"
@@ -62,19 +68,33 @@ docker compose run --rm certbot certonly --webroot -w /tmp/acme-challenge \
     --force-renewal
 
 if [ $? -eq 0 ]; then
+  echo ""
   echo "### Certificate obtained successfully!"
   echo "### Restoring SSL nginx config ..."
-  mv ./nginx/nginx.conf.backup ./nginx/nginx.conf
+  cp ./nginx/nginx.conf.backup ./nginx/nginx.conf
   
-  echo "### Restarting nginx with SSL config ..."
+  echo "### Recreating nginx with SSL config ..."
   docker compose stop web
-  docker compose up -d web
+  docker compose up -d --force-recreate web
   
-  echo "### Setup complete! Your site should now be accessible via HTTPS."
+  echo "### Waiting for nginx to start with SSL ..."
+  sleep 5
+  
+  echo "### Checking nginx status ..."
+  docker compose ps web
+  docker compose logs --tail=10 web
+  
+  echo ""
+  echo "=========================================="
+  echo "✓ Setup complete! Your site should now be accessible via HTTPS."
+  echo "✓ Visit: https://irradiacao.heliogabriel.com"
+  echo "=========================================="
 else
+  echo ""
   echo "### Certificate request failed!"
   echo "### Restoring original nginx config ..."
-  mv ./nginx/nginx.conf.backup ./nginx/nginx.conf
+  cp ./nginx/nginx.conf.backup ./nginx/nginx.conf
+  docker compose up -d --force-recreate web 2>/dev/null || true
   echo "### Please check the error messages above and try again."
   exit 1
 fi
