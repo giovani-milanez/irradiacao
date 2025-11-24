@@ -26,6 +26,9 @@ type OAuthController struct {
 }
 
 func NewOAuthController(repo types.IUserRepository, pRepo types.IPatientRepository, key []byte, validity time.Duration, googleId string, googleSecret string, facebookId string, facebookSecret string, backendUrl string, frontendUrl string) *OAuthController {
+	log.Printf("Google ID: %s", googleId)
+	log.Printf("Backend URL: %s", backendUrl)
+	log.Printf("Frontend URL: %s", frontendUrl)
 	goth.UseProviders(
 		google.New(googleId, googleSecret, fmt.Sprintf("%s/auth/google/callback", backendUrl), "https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"),
 		facebook.New(facebookId, facebookSecret, fmt.Sprintf("%s/auth/facebook/callback", backendUrl)),
