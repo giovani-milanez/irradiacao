@@ -9,39 +9,26 @@ fi
 
 domains=(irradiacao.heliogabriel.com)
 rsa_key_size=4096
-data_path="./certbot"
 email="irradiacao@heliogabriel.com"
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
-if [ -d "$data_path" ]; then
-  read -p "Existing data found for $domains. Continue and replace existing certificate? (y/N) " decision
-  if [ "$decision" != "Y" ] && [ "$decision" != "y" ]; then
-    exit
-  fi
-fi
+echo "### Stopping any running web container ..."
+docker compose stop web
+docker compose rm -f web
 
-echo "### Starting nginx ..."
+echo "### Switching to temporary nginx config (no SSL) ..."
+# Backup the current config and use the init config
+cp ./nginx/nginx.conf ./nginx/nginx.conf.backup
+cp ./nginx/nginx-init.conf ./nginx/nginx.conf
+
+echo "### Starting nginx with temporary config ..."
 docker compose up -d web
 
-echo "### Creating dummy certificate for $domains ..."
-path="/etc/letsencrypt/live/$domains"
-mkdir -p "$data_path/conf/live/$domains"
-docker compose run --rm --entrypoint "\
-  openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1\
-    -keyout '$path/privkey.pem' \
-    -out '$path/fullchain.pem' \
-    -subj '/CN=localhost'" certbot
-echo
+echo "### Waiting for nginx to be ready ..."
+sleep 5
 
-echo "### Starting nginx with dummy certificate ..."
-docker compose up --force-recreate -d web
-echo
-
-echo "### Deleting dummy certificate for $domains ..."
-docker compose run --rm --entrypoint "\
-  rm -Rf /etc/letsencrypt/live/$domains && \
-  rm -Rf /etc/letsencrypt/archive/$domains && \
-  rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
+echo "### Testing if nginx is accessible ..."
+docker compose exec web curl -s http://localhost/.well-known/acme-challenge/test || echo "Note: Test request to nginx completed"
 echo
 
 echo "### Requesting Let's Encrypt certificate for $domains ..."
@@ -60,16 +47,29 @@ esac
 # Enable staging mode if needed
 if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
-docker compose run --rm --entrypoint "\
-  certbot certonly --webroot -w /tmp/acme-challenge \
+docker compose run --rm certbot certonly --webroot -w /tmp/acme-challenge \
     $staging_arg \
     $email_arg \
     $domain_args \
     --rsa-key-size $rsa_key_size \
     --agree-tos \
-    --force-renewal" certbot
-echo
+    --force-renewal
 
-echo "### Reloading nginx ..."
-docker compose exec web nginx -s reload
+if [ $? -eq 0 ]; then
+  echo "### Certificate obtained successfully!"
+  echo "### Restoring SSL nginx config ..."
+  mv ./nginx/nginx.conf.backup ./nginx/nginx.conf
+  
+  echo "### Restarting nginx with SSL config ..."
+  docker compose stop web
+  docker compose up -d web
+  
+  echo "### Setup complete! Your site should now be accessible via HTTPS."
+else
+  echo "### Certificate request failed!"
+  echo "### Restoring original nginx config ..."
+  mv ./nginx/nginx.conf.backup ./nginx/nginx.conf
+  echo "### Please check the error messages above and try again."
+  exit 1
+fi
 
