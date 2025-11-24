@@ -12,6 +12,12 @@ rsa_key_size=4096
 email="irradiacao@heliogabriel.com"
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
+echo "### Ensuring backend services are running ..."
+docker compose up -d db goapp nextapp
+
+echo "### Waiting for backend services to be ready ..."
+sleep 10
+
 echo "### Stopping any running web container ..."
 docker compose stop web
 docker compose rm -f web
