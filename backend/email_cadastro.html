@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Irradiação Energética</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Raleway:wght@300;400;500;600&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Raleway', Arial, sans-serif;
+      line-height: 1.7;
+      color: #2d2d2d;
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 0;
+      background-color: #f9f6f1;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #3a6186 0%, #6a9fd8 100%);
+      color: white;
+      text-align: center;
+      padding: 14px 24px;
+    }
+
+    .header h1 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      font-size: 1.2em;
+      letter-spacing: 1.5px;
+      margin: 0;
+      display: inline;
+      vertical-align: middle;
+    }
+
+    .header .subtitle {
+      font-size: 0.7em;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.8;
+      font-weight: 400;
+      margin: 0;
+      display: inline;
+      vertical-align: middle;
+    }
+
+    .header .light-symbol {
+      font-size: 1em;
+      opacity: 0.85;
+      display: inline;
+      vertical-align: middle;
+    }
+
+    .content {
+      background-color: #ffffff;
+      padding: 36px 36px 28px;
+    }
+
+    .greeting {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.25em;
+      font-weight: 400;
+      color: #3a6186;
+      margin-bottom: 6px;
+    }
+
+    .welcome-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.55em;
+      font-weight: 600;
+      color: #2c3e50;
+      line-height: 1.35;
+      margin: 0 0 22px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid #e8e0d5;
+    }
+
+    .content p {
+      font-size: 0.93em;
+      color: #444;
+      margin: 0 0 14px;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #eef5fb 0%, #f4edf8 100%);
+      border-left: 3px solid #6a9fd8;
+      padding: 16px 20px;
+      border-radius: 0 6px 6px 0;
+      margin: 20px 0;
+    }
+
+    .highlight-box p {
+      margin: 0;
+      font-style: italic;
+      color: #3a5a7a;
+      font-size: 0.92em;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #e8e0d5;
+      margin: 24px 0;
+    }
+
+    .action-section {
+      background-color: #f9f6f1;
+      padding: 24px 28px;
+      border-radius: 8px;
+      margin: 24px 0;
+    }
+
+    .action-section p {
+      font-size: 0.93em;
+      color: #444;
+      margin: 0 0 16px;
+    }
+
+    .btn-wrapper {
+      text-align: center;
+      margin: 20px 0 6px;
+    }
+
+    .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #3a6186, #6a9fd8);
+      color: #ffffff !important;
+      text-decoration: none;
+      font-family: 'Raleway', Arial, sans-serif;
+      font-size: 0.95em;
+      font-weight: 600;
+      padding: 15px 38px;
+      border-radius: 50px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .signature {
+      text-align: center;
+      padding: 10px 0 4px;
+    }
+
+    .signature p {
+      margin: 2px 0;
+      color: #666;
+      font-size: 0.88em;
+    }
+
+    .signature .sig-name {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.1em;
+      font-weight: 600;
+      color: #3a6186;
+    }
+
+    .social {
+      background: linear-gradient(135deg, #3a6186 0%, #6a9fd8 100%);
+      padding: 20px 30px;
+      text-align: center;
+    }
+
+    .social p {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.82em;
+      margin: 0 0 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .social .handles {
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.9em;
+      letter-spacing: 1px;
+    }
+
+    .footer {
+      background-color: #2c3e50;
+      padding: 16px 20px;
+      text-align: center;
+    }
+
+    .footer p {
+      margin: 0 0 6px;
+      font-size: 0.78em;
+      color: rgba(255, 255, 255, 0.55);
+      line-height: 1.5;
+    }
+
+    .footer .quote {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-style: italic;
+      font-size: 0.92em;
+      color: rgba(255, 255, 255, 0.75);
+      margin-bottom: 10px !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <span class="light-symbol">✦</span>
+    <h1>Comunidade da Ação</h1>
+    <span style="opacity:0.5; margin: 0 2px;">|</span>
+    <span class="subtitle">Grupo de Irradiação de Cura</span>
+  </div>
+
+  <div class="content">
+    <p class="greeting">Olá, {{.Nome}}</p>
+    <h2 class="welcome-title">Bem-vindo ao Grupo de Irradiação<br>da Comunidade da Ação</h2>
+
+    <p>Seu cadastro foi realizado com sucesso! Agora você precisa <strong>cadastrar</strong> um ou mais nomes para
+      receber a irradiação energética:</p>
+
+    <div class="btn-wrapper" style="margin: 20px 0 28px;">
+      <a href="{{.Link}}" class="btn">Cadastrar nome para irradiação</a>
+    </div>
+
+    <hr class="divider">
+
+    <p>Receba nosso carinho e nossa gratidão por permitir que este trabalho de luz alcance você.</p>
+
+    <p>O Grupo de Irradiação foi criado sob a orientação dos mentores espirituais desta comunidade, por meio de
+      canalizações mediúnicas, em sintonia com o momento atual da humanidade e com novas formas de cuidado voltadas ao
+      bem-estar e à saúde dos seres humanos.</p>
+
+    <p>Com a direção desses mentores, membros da comunidade se dispõem a doar tempo e energia vital para todos que
+      tenham afinidade e fé nesta forma de cura e proteção.</p>
+
+    <div class="highlight-box">
+      <p>É fundamental que a pessoa indicada — ou você mesmo — esteja ciente e <strong>autorize o recebimento da
+          Irradiação de Cura</strong>, pois o livre-arbítrio é um direito universal e essencial para a eficácia do
+        tratamento.</p>
+    </div>
+
+    <p>Após cada sessão, o paciente permanece em tratamento energético ao longo da semana.</p>
+
+    <p>Por meio deste e-mail cadastrado, você receberá a confirmação de que foi incluído na lista de pacientes que
+      receberão a Irradiação de Cura.</p>
+
+    <p>No dia e horário da sessão, procure mentalizar este trabalho e conectar-se com sua intenção. Com o coração em
+      gratidão, tenha a certeza de que estará sendo assistido e protegido.</p>
+
+    <p>Após a sessão, você também receberá a confirmação de que a Irradiação de Cura foi realizada.</p>
+
+    <hr class="divider">
+
+    <p style="font-size:0.85em; color:#777;">Este trabalho não possui caráter religioso e não substitui tratamentos
+      médicos ou terapêuticos. Trata-se de uma ação espiritual, coletiva e consciente, fundamentada no amor, no serviço
+      desinteressado e na conexão com o Criador e com os mentores desta Comunidade.</p>
+
+    <p style="font-size:0.85em; color:#777;">Caso perceba benefícios ou mudanças após o tratamento, ficaremos felizes em
+      receber seu relato.</p>
+
+    <hr class="divider">
+
+    <div class="signature">
+      <p>Com carinho,</p>
+      <p class="sig-name">Grupo de Irradiação de Cura</p>
+      <p>Comunidade da Ação</p>
+    </div>
+  </div>
+
+  <div class="social">
+    <p>Siga-nos nas redes sociais</p>
+    <div class="handles">
+      <a href="https://instagram.com/heliogabriel" style="color:#ffffff; text-decoration:none;">@heliogabriel</a>
+      &nbsp;·&nbsp;
+      <a href="https://instagram.com/camilarosademoraes"
+        style="color:#ffffff; text-decoration:none;">@camilarosademoraes</a>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p class="quote">"Comunidade da Ação — unidos no amor, a serviço da luz e da cura."</p>
+    <p>© 2026 Comunidade da Ação | Grupo Irradiação</p>
+    <p>Os membros da comunidade agradecem.</p>
+  </div>
+
+</body>
+
+</html>

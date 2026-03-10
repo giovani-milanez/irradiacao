@@ -16,20 +16,68 @@ func NewSessionRepository(db *sql.DB) *SessionRepository {
 	return &SessionRepository{DB: db}
 }
 
-func (r *SessionRepository) runSelect(c context.Context, where string, includes bool, args ...any) ([]types.Session, error) {
+func (r *SessionRepository) hasPlaceImgColumn(c context.Context) (bool, error) {
+	var exists bool
+	err := r.DB.QueryRowContext(
+		c,
+		`SELECT EXISTS (
+			SELECT 1
+			FROM information_schema.columns
+			WHERE table_schema = 'public'
+			  AND table_name = 'sessions'
+			  AND column_name = 'place_img'
+		)`,
+	).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+	return exists, nil
+}
+
+func (r *SessionRepository) runSelect(c context.Context, where string, includes bool, includePlaceImg bool, args ...any) ([]types.Session, error) {
+	hasPlaceImg, err := r.hasPlaceImgColumn(c)
+	if err != nil {
+		return []types.Session{}, err
+	}
+	placeImgSelect := "NULL::bytea AS place_img"
+	if includePlaceImg && hasPlaceImg {
+		placeImgSelect = "s.place_img"
+	}
+	if !includePlaceImg {
+		placeImgSelect = "NULL::bytea AS place_img"
+	}
+
 	query := fmt.Sprintf(`
 SELECT 
-		s.*,
-    (SELECT COUNT(*) AS patient_count FROM patients_session ps WHERE ps.id_session = s.id),
+		s.id,
+		s.id_user,
+		s.title,
+		s."desc",
+		s.place,
+		%s,
+		s.done,
+		s.date,
     (SELECT COUNT(*) AS uti_count FROM uti_session us WHERE us.id_session = s.id),
 		(SELECT COUNT(*) AS members_count FROM members_session ms WHERE ms.id_session = s.id)     
 FROM 
     sessions s
 		%s
 ORDER BY s.date desc
-	`, where)
+	`, placeImgSelect, where)
 	if !includes {
-		query = fmt.Sprintf("SELECT * from sessions p %s", where)
+		query = fmt.Sprintf(`
+SELECT
+	s.id,
+	s.id_user,
+	s.title,
+	s."desc",
+	s.place,
+	%s,
+	s.done,
+	s.date
+FROM sessions s
+%s
+		`, placeImgSelect, where)
 	}
 	rows, err := r.DB.QueryContext(c, query, args...)
 	if err != nil {
@@ -39,17 +87,17 @@ ORDER BY s.date desc
 
 	users := []types.Session{}
 	for rows.Next() {
-			var u types.Session
-			if includes {
-				if err := rows.Scan(&u.Id, &u.IdUser, &u.Title, &u.Description, &u.Place, &u.Done, &u.Date, &u.PatientsCount, &u.UtiCount, &u.MembersCount); err != nil {
-					return []types.Session{}, err
-				}
-			} else {
-				if err := rows.Scan(&u.Id, &u.IdUser, &u.Title, &u.Description, &u.Place, &u.Done, &u.Date); err != nil {
-					return []types.Session{}, err
-				}
+		var u types.Session
+		if includes {
+			if err := rows.Scan(&u.Id, &u.IdUser, &u.Title, &u.Description, &u.Place, &u.PlaceImg, &u.Done, &u.Date, &u.UtiCount, &u.MembersCount); err != nil {
+				return []types.Session{}, err
 			}
-			users = append(users, u)
+		} else {
+			if err := rows.Scan(&u.Id, &u.IdUser, &u.Title, &u.Description, &u.Place, &u.PlaceImg, &u.Done, &u.Date); err != nil {
+				return []types.Session{}, err
+			}
+		}
+		users = append(users, u)
 	}
 	if err := rows.Err(); err != nil {
 		return []types.Session{}, err
@@ -58,22 +106,30 @@ ORDER BY s.date desc
 }
 
 func (r *SessionRepository) GetById(c context.Context, id int, includes bool) (types.Session, error) {
-  ret, err := r.runSelect(c, "WHERE id = $1", includes, id)
+	ret, err := r.runSelect(c, "WHERE id = $1", includes, true, id)
 	if err != nil {
 		return types.Session{}, err
 	}
-  if len(ret) == 0 {
-    return types.Session{}, types.ErrNotFound
-  }
+	if len(ret) == 0 {
+		return types.Session{}, types.ErrNotFound
+	}
 	return ret[0], err
 }
 func (r *SessionRepository) FindAll(c context.Context) ([]types.Session, error) {
-	return r.runSelect(c, "", true)
+	return r.runSelect(c, "", true, false)
 }
 func (r *SessionRepository) Create(c context.Context, item types.Session) (types.Session, error) {
 	var id int
-	err := r.DB.QueryRowContext(c, "INSERT INTO sessions (id_user, title, \"desc\", place, done, \"date\") VALUES ($1, $2, $3, $4, $5, $6) RETURNING id", item.IdUser, item.Title, item.Description, item.Place, false, item.Date).Scan(&id)
-	
+	hasPlaceImg, err := r.hasPlaceImgColumn(c)
+	if err != nil {
+		return types.Session{}, err
+	}
+	if hasPlaceImg {
+		err = r.DB.QueryRowContext(c, "INSERT INTO sessions (id_user, title, \"desc\", place, place_img, done, \"date\") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id", item.IdUser, item.Title, item.Description, item.Place, item.PlaceImg, false, item.Date).Scan(&id)
+	} else {
+		err = r.DB.QueryRowContext(c, "INSERT INTO sessions (id_user, title, \"desc\", place, done, \"date\") VALUES ($1, $2, $3, $4, $5, $6) RETURNING id", item.IdUser, item.Title, item.Description, item.Place, false, item.Date).Scan(&id)
+	}
+
 	if err != nil {
 		return types.Session{}, err
 	}
@@ -82,7 +138,15 @@ func (r *SessionRepository) Create(c context.Context, item types.Session) (types
 }
 
 func (r *SessionRepository) Update(c context.Context, item types.Session) error {
-	_, err := r.DB.ExecContext(c, "UPDATE sessions SET title = $2, \"desc\" = $3, place = $4, done = $5, \"date\" = $6 where id = $1", item.Id, item.Title, item.Description, item.Place, item.Done, item.Date)
+	hasPlaceImg, err := r.hasPlaceImgColumn(c)
+	if err != nil {
+		return err
+	}
+	if hasPlaceImg {
+		_, err = r.DB.ExecContext(c, "UPDATE sessions SET title = $2, \"desc\" = $3, place = $4, place_img = $5, done = $6, \"date\" = $7 where id = $1", item.Id, item.Title, item.Description, item.Place, item.PlaceImg, item.Done, item.Date)
+	} else {
+		_, err = r.DB.ExecContext(c, "UPDATE sessions SET title = $2, \"desc\" = $3, place = $4, done = $5, \"date\" = $6 where id = $1", item.Id, item.Title, item.Description, item.Place, item.Done, item.Date)
+	}
 	if err != nil {
 		return err
 	}
@@ -95,7 +159,6 @@ func (r *SessionRepository) Delete(c context.Context, id int) error {
 	}
 	return nil
 }
-
 
 func (r *SessionRepository) UpdatePatients(c context.Context, id int, patients []int) error {
 	_, err := r.DB.ExecContext(c, "DELETE from patients_session where id_session = $1", id)
@@ -116,7 +179,7 @@ func (r *SessionRepository) UpdatePatients(c context.Context, id int, patients [
 	_, err = r.DB.ExecContext(c, sql)
 	return err
 }
-func (r *SessionRepository) UpdateUtis(c context.Context,id int, patients []int) error {
+func (r *SessionRepository) UpdateUtis(c context.Context, id int, patients []int) error {
 	_, err := r.DB.ExecContext(c, "DELETE from uti_session where id_session = $1", id)
 	if err != nil {
 		return err
@@ -135,7 +198,7 @@ func (r *SessionRepository) UpdateUtis(c context.Context,id int, patients []int)
 	_, err = r.DB.ExecContext(c, sql)
 	return err
 }
-func (r *SessionRepository) UpdateMembers(c context.Context,id int, members []int) error {
+func (r *SessionRepository) UpdateMembers(c context.Context, id int, members []int) error {
 	_, err := r.DB.ExecContext(c, "DELETE from members_session where id_session = $1", id)
 	if err != nil {
 		return err
@@ -171,11 +234,11 @@ func (r *SessionRepository) GetPatientsById(c context.Context, id int) ([]types.
 
 	users := []types.Patient{}
 	for rows.Next() {
-			var u types.Patient
-			if err := rows.Scan(&u.Name, &u.UserName, &u.UserEmail); err != nil {
-				return []types.Patient{}, err
-			}
-			users = append(users, u)
+		var u types.Patient
+		if err := rows.Scan(&u.Name, &u.UserName, &u.UserEmail); err != nil {
+			return []types.Patient{}, err
+		}
+		users = append(users, u)
 	}
 	if err := rows.Err(); err != nil {
 		return []types.Patient{}, err
@@ -199,11 +262,11 @@ func (r *SessionRepository) GetUtiById(c context.Context, id int) ([]types.UtiPa
 
 	users := []types.UtiPatient{}
 	for rows.Next() {
-			var u types.UtiPatient
-			if err := rows.Scan(&u.Name, &u.UserName, &u.UserEmail); err != nil {
-				return []types.UtiPatient{}, err
-			}
-			users = append(users, u)
+		var u types.UtiPatient
+		if err := rows.Scan(&u.Name, &u.UserName, &u.UserEmail); err != nil {
+			return []types.UtiPatient{}, err
+		}
+		users = append(users, u)
 	}
 	if err := rows.Err(); err != nil {
 		return []types.UtiPatient{}, err

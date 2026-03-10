@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"api/utils"
+	"errors"
 	"net/http"
 	"strings"
 
@@ -10,22 +11,36 @@ import (
 
 func AuthMiddleware(key []byte) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authVal := c.Request.Header["Authorization"]
-		if len(authVal) <= 0 {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, map[string]string{"message":"missing Authorization header"})
-			return
-		}
-		tokens := strings.Split(authVal[0], " ")
-		if len(tokens) != 2 {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, map[string]string{"message":"invalid token header"})
-			return
-		}
-		u, err := utils.VerifyToken(tokens[1], key)
+		token, err := tokenFromRequest(c)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, map[string]string{"message":err.Error()})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, map[string]string{"message": err.Error()})
+			return
+		}
+
+		u, err := utils.VerifyToken(token, key)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, map[string]string{"message": err.Error()})
 			return
 		}
 		c.Set("user", u)
 		c.Next()
 	}
+}
+
+func tokenFromRequest(c *gin.Context) (string, error) {
+	authHeader := c.GetHeader("Authorization")
+	if authHeader != "" {
+		tokens := strings.Fields(authHeader)
+		if len(tokens) != 2 || !strings.EqualFold(tokens[0], "Bearer") {
+			return "", errors.New("invalid token header")
+		}
+		return tokens[1], nil
+	}
+
+	cookieToken, err := c.Cookie("accessToken")
+	if err == nil && cookieToken != "" {
+		return cookieToken, nil
+	}
+
+	return "", errors.New("missing authentication token")
 }

@@ -12,16 +12,17 @@ type Session struct {
 	Title       string    `json:"title"`
 	Description string    `json:"desc"`
 	Place       string    `json:"place"`
+	PlaceImg    []byte    `json:"place_img,omitempty"`
 	Done        bool      `json:"done"`
 	Date        time.Time `json:"date"`
 
-	PatientsCount  int       `json:"patients_count"`
-	UtiCount       int       `json:"uti_count"`
-	MembersCount   int       `json:"members_count"`
+	// PatientsCount  int       `json:"patients_count"`
+	UtiCount     int `json:"uti_count"`
+	MembersCount int `json:"members_count"`
 
-	Patients       []Patient    `json:"patients"`
-	Uti            []UtiPatient `json:"utis"`
-	Members        []User       `json:"members"`
+	// Patients       []Patient    `json:"patients"`
+	Uti     []UtiPatient `json:"utis"`
+	Members []User       `json:"members"`
 }
 
 type ISessionRepository interface {
@@ -32,9 +33,8 @@ type ISessionRepository interface {
 	Delete(c context.Context, id int) error
 
 	UpdatePatients(c context.Context, id int, patients []int) error
-	UpdateUtis(c context.Context,id int, patients []int) error
+	UpdateUtis(c context.Context, id int, patients []int) error
 	UpdateMembers(c context.Context, id int, members []int) error
-	GetPatientsById(c context.Context, id int) ([]Patient, error)
 	GetUtiById(c context.Context, id int) ([]UtiPatient, error)
 }
 
@@ -43,6 +43,6 @@ type ISessionService interface {
 	GetById(c context.Context, id int) (Session, error)
 	Create(c context.Context, item dto.CreateSessiontDTO) (Session, error)
 	Update(c context.Context, id int, item dto.CreateSessiontDTO) error
-	Delete(c context.Context, id int) error	
+	Delete(c context.Context, id int) error
 	Finish(c context.Context, id int) error
 }

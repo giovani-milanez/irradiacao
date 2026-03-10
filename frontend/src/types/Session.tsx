@@ -9,6 +9,7 @@ type Session = {
   title: string;
   desc: string;
   place: string;
+  place_img?: string;
   done: boolean;
   date: string;
 

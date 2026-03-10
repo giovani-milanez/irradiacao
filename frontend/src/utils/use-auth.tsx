@@ -1,7 +1,7 @@
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/router";
-import { deleteCookie, getCookie } from "cookies-next";
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
+import AxiosInstance from "./axiosInstance";
 // import UserContext, { TUser } from "./user-context";
 
 export type User = {
@@ -36,51 +36,55 @@ export function useAuth() {
   return consumer;
 }
 
-function b64DecodeUnicode(str: string) {
-  return decodeURIComponent(atob(str).split('').map(function (c) {
-    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-  }).join(''));
-}
-
-function parseJwt(token: string) {
-  if (!token) { return; }
-  const base64Url = token.split('.')[1];
-  const base64 = base64Url.replace('-', '+').replace('_', '/');
-  return JSON.parse(b64DecodeUnicode(base64));
-}
-
-
-
 export default function UserProvider({ children }: UserProviderProps) {
   const [user, setUser] = useState<User>();
+  const [authResolved, setAuthResolved] = useState(false);
   const router = useRouter()
   const pathname = usePathname()
 
   const logout = () => {
-    deleteCookie('accessToken')
-    router.push('/')
+    AxiosInstance.post('/auth/logout').finally(() => {
+      setUser(undefined)
+      router.push('/')
+    })
   }
 
   useEffect(() => {
-    console.log('user-provider effect')
-    if (user == undefined) {
-      console.log('user == undefined')
-      const token = getCookie('accessToken')
-      if (token !== undefined) {
-        const decoded = parseJwt(token.toString());
-        console.log('setUser')
-        console.log(decoded)
-        setUser({ id: Number(decoded.sub ?? 0), admin: decoded.admin, avatar: decoded.avatar, email: decoded.email, member: decoded.member, name: decoded.name, created: '' })
-        if (pathname == '/') {
-          router.push('/dashboard')
-        }
-      } else {
-        if (pathname !== '/' && pathname !== '/registrado' && pathname !== '/auth') {
-          router.push('/')
-        }
-      }
+    let cancelled = false
+
+    AxiosInstance.get<User>('/api/me')
+      .then((resp) => {
+        if (cancelled) return
+        setUser(resp.data)
+      })
+      .catch(() => {
+        if (cancelled) return
+        setUser(undefined)
+      })
+      .finally(() => {
+        if (cancelled) return
+        setAuthResolved(true)
+      })
+
+    return () => {
+      cancelled = true
     }
-  }, [pathname, router, user])
+  }, [])
+
+  useEffect(() => {
+    if (!authResolved) return
+
+    if (user) {
+      if (pathname === '/') {
+        router.push('/uti')
+      }
+      return
+    }
+
+    if (pathname !== '/' && pathname !== '/registrado' && pathname !== '/complete_auth') {
+      router.push('/')
+    }
+  }, [authResolved, pathname, router, user])
 
   return (
     <UserContext.Provider value={{ user, setUser, logout }}>

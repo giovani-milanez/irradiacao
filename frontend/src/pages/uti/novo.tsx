@@ -14,7 +14,8 @@ export default function NewUtiPage() {
     AxiosInstance.post('/api/uti', { name: name, description: desc, birthday: new Date(birth.toUTCString().slice(0, -4)) }).then(r => {
       if (r.status == 200) {
         toast.success('Nome adicionado!')
-        router.back()
+        // router.back()
+        router.replace('/uti')
       } else {
         toast.error('Ocorreu um erro, tente novamente')
       }

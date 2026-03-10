@@ -1,4 +1,4 @@
-FROM golang:1.23 as builder
+FROM golang:alpine as builder
 
 ARG CGO_ENABLED=0
 # Set destination for COPY
@@ -23,7 +23,7 @@ RUN go build -o server
 
 FROM scratch
 COPY --from=builder /app/server /server
-COPY --from=builder /app/email.html /email.html
+COPY --from=builder /app/*.html /
 COPY --from=builder /app/migrations/* /migrations/
 COPY --from=builder /app/data.sql /
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/

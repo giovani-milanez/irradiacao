@@ -7,11 +7,21 @@ type EmailMessage struct {
 	Body string
 }
 
-type EmailData struct {
+type EmailData_SessaoRealizada struct {
 	Nome string
 	Data string
-	HasGeral bool
 	HasUti bool
-	Geral []string
 	Uti []string
+}
+
+type EmailData_SessaoCriada struct {
+	NomeUsuario string
+	Nomes []string
+	Data string
+	Hora string
+}
+
+type EmailData_Cadastro struct {
+	Nome string
+	Link string
 }

@@ -184,7 +184,7 @@ export default function ListaIntensivaPage() {
 
 
   useEffect(() => {
-    console.log('Geral useffect')
+    console.log('Intensiva useffect')
     getData()
   }, [])
 
@@ -214,7 +214,9 @@ export default function ListaIntensivaPage() {
             <Modal showModal={showDetailsModal} loading={loading} title={data.find(p => p.id == selectedId)?.name || ""} saveText='OK' onClose={() => { setShowDetailsModal(false) }} onAccept={() => {
               setShowDetailsModal(false)
             }}>
-              <pre> {data.find(p => p.id == selectedId)?.description} </pre>
+              <pre className="whitespace-pre-wrap break-words overflow-x-auto max-h-80">
+                {data.find(p => p.id == selectedId)?.description}
+              </pre>
             </Modal>
           </div>
         </>) :

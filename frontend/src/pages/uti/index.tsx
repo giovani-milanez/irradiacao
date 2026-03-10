@@ -86,7 +86,7 @@ export default function UtiPage() {
               <Panel title='Irradiação Intensiva'>
                 {/* <p className='font-light text-base sm:text-lg md:text-xl'>As irradiações ocorrem toda semana e são feitas pelos membros do Grupo de Irradiação da Comunidade da Ação.</p> */}
                 <p className='font-light text-base sm:text-lg md:text-xl'>Somente adicione caso a pessoa tenha <b>doença grave</b>.</p>
-                <p className='pt-2 font-light text-base sm:text-lg md:text-xl'>Nesta modalidade são atendidas cerca de 15 pessoas por irradiação.</p>
+                <p className='pt-2 font-light text-base sm:text-lg md:text-xl'>São atendidas cerca de 15 a 20 pessoas por sessão de irradiação.</p>
               </Panel>
             </div>
             {qInfo && <QueueInfoComponent info={qInfo}></QueueInfoComponent>}

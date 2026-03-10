@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmação de Irradiação de Cura</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Raleway:wght@300;400;500;600&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Raleway', Arial, sans-serif;
+      line-height: 1.7;
+      color: #2d2d2d;
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 0;
+      background-color: #f9f6f1;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #3a6186 0%, #6a9fd8 100%);
+      color: white;
+      text-align: center;
+      padding: 14px 24px;
+    }
+
+    .header h1 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      font-size: 1.2em;
+      letter-spacing: 1.5px;
+      margin: 0;
+      display: inline;
+      vertical-align: middle;
+    }
+
+    .header .subtitle {
+      font-size: 0.7em;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.8;
+      font-weight: 400;
+      margin: 0;
+      display: inline;
+      vertical-align: middle;
+    }
+
+    .header .light-symbol {
+      font-size: 1em;
+      opacity: 0.85;
+      display: inline;
+      vertical-align: middle;
+    }
+
+    .content {
+      background-color: #ffffff;
+      padding: 36px 36px 28px;
+    }
+
+    .greeting {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.25em;
+      font-weight: 400;
+      color: #3a6186;
+      margin-bottom: 6px;
+    }
+
+    .welcome-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.55em;
+      font-weight: 600;
+      color: #2c3e50;
+      line-height: 1.35;
+      margin: 0 0 22px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid #e8e0d5;
+    }
+
+    .content p {
+      font-size: 0.93em;
+      color: #444;
+      margin: 0 0 14px;
+    }
+
+    .session-box {
+      background: linear-gradient(135deg, #eef5fb 0%, #f0f7ff 100%);
+      border-left: 3px solid #6a9fd8;
+      padding: 16px 20px;
+      border-radius: 0 6px 6px 0;
+      margin: 20px 0;
+    }
+
+    .session-box p {
+      margin: 0 0 6px;
+      color: #3a5a7a;
+      font-size: 0.92em;
+    }
+
+    .session-box p:last-child {
+      margin: 0;
+    }
+
+    .session-box .session-date {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.3em;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 4px;
+    }
+
+    .names-list {
+      background-color: #f4f8fc;
+      border: 1px solid #d0e4f4;
+      padding: 16px 20px;
+      border-radius: 6px;
+      margin: 16px 0;
+    }
+
+    .names-list p {
+      font-size: 0.82em;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #6a9fd8;
+      font-weight: 600;
+      margin: 0 0 10px;
+    }
+
+    .names-list ul {
+      margin: 0;
+      padding-left: 20px;
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .names-list li {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.05em;
+      font-weight: 600;
+      color: #2c3e50;
+      padding: 4px 0;
+      border-bottom: 1px solid #e0edf8;
+    }
+
+    .names-list li:last-child {
+      border-bottom: none;
+    }
+
+    .names-list li::before {
+      content: '✦ ';
+      color: #6a9fd8;
+      font-size: 0.7em;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #eef5fb 0%, #f4edf8 100%);
+      border-left: 3px solid #6a9fd8;
+      padding: 16px 20px;
+      border-radius: 0 6px 6px 0;
+      margin: 20px 0;
+    }
+
+    .highlight-box p {
+      margin: 0;
+      font-style: italic;
+      color: #3a5a7a;
+      font-size: 0.92em;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #e8e0d5;
+      margin: 24px 0;
+    }
+
+    .signature {
+      text-align: center;
+      padding: 10px 0 4px;
+    }
+
+    .signature p {
+      margin: 2px 0;
+      color: #666;
+      font-size: 0.88em;
+    }
+
+    .signature .sig-name {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.1em;
+      font-weight: 600;
+      color: #3a6186;
+    }
+
+    .social {
+      background: linear-gradient(135deg, #3a6186 0%, #6a9fd8 100%);
+      padding: 20px 30px;
+      text-align: center;
+    }
+
+    .social p {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.82em;
+      margin: 0 0 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .social .handles {
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.9em;
+      letter-spacing: 1px;
+    }
+
+    .footer {
+      background-color: #2c3e50;
+      padding: 16px 20px;
+      text-align: center;
+    }
+
+    .footer p {
+      margin: 0 0 6px;
+      font-size: 0.78em;
+      color: rgba(255, 255, 255, 0.55);
+      line-height: 1.5;
+    }
+
+    .footer .quote {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-style: italic;
+      font-size: 0.92em;
+      color: rgba(255, 255, 255, 0.75);
+      margin-bottom: 10px !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <span class="light-symbol">✦</span>
+    <h1>Comunidade da Ação</h1>
+    <span style="opacity:0.5; margin: 0 2px;">|</span>
+    <span class="subtitle">Grupo de Irradiação de Cura</span>
+  </div>
+
+  <div class="content">
+    <p class="greeting">Olá, {{.NomeUsuario}}</p>
+    <h2 class="welcome-title">Confirmação de Inclusão<br>na Irradiação de Cura</h2>
+
+    <p>Recebemos sua solicitação e informamos que o nome indicado foi incluído na lista de pacientes que receberão a
+      Irradiação de Cura realizada pelo Grupo de Irradiação da Comunidade da Ação.</p>
+
+    <div class="session-box">
+      <p>Sessão agendada para:</p>
+      <p class="session-date">{{.Data}} às {{.Hora}}</p>
+    </div>
+
+    <div class="names-list">
+      <p>Nomes incluídos na sessão</p>
+      <ul>
+        {{range .Nomes}}
+        <li>{{.}}</li>
+        {{end}}
+      </ul>
+    </div>
+
+    <p>A sessão será conduzida com a presença e orientação dos mentores espirituais que acompanham este trabalho e as
+      coordenadoras do grupo. A pessoa indicada permanecerá em tratamento energético ao longo da semana após a
+      realização da sessão.</p>
+
+    <div class="highlight-box">
+      <p>No dia e horário da Irradiação de Cura, procure <strong>mentalizar este trabalho</strong> com serenidade e
+        gratidão, conectando-se à intenção de cura, proteção e equilíbrio.</p>
+    </div>
+
+    <p>Após a realização da sessão, você receberá uma nova mensagem confirmando que a Irradiação de Cura foi realizada.
+    </p>
+
+    <hr class="divider">
+
+    <p>Seguimos unidos em propósito, confiando na ação amorosa da espiritualidade e no amparo dos mentores desta
+      Comunidade.</p>
+
+    <div class="signature">
+      <p>Com carinho,</p>
+      <p class="sig-name">Grupo de Irradiação de Cura</p>
+      <p>Comunidade da Ação</p>
+    </div>
+  </div>
+
+  <div class="social">
+    <p>Siga-nos nas redes sociais</p>
+    <div class="handles">
+      <a href="https://instagram.com/heliogabriel" style="color:#ffffff; text-decoration:none;">@heliogabriel</a>
+      &nbsp;·&nbsp;
+      <a href="https://instagram.com/camilarosademoraes"
+        style="color:#ffffff; text-decoration:none;">@camilarosademoraes</a>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p class="quote">"Comunidade da Ação — unidos no amor, a serviço da luz e da cura."</p>
+    <p>© 2026 Comunidade da Ação | Grupo Irradiação</p>
+    <p>Os membros da comunidade agradecem.</p>
+  </div>
+
+</body>
+
+</html>

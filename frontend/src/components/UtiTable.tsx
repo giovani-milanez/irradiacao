@@ -37,7 +37,7 @@ const UtiTable = (
                 <path d="M20 8v6M23 11h-6" />
               </svg>
               <span className="ml-2 md:ml-3 text-sm md:text-base">
-                Novo
+                Cadastrar nome para irradiação
               </span>
             </button>
           </div>
@@ -136,7 +136,7 @@ const UtiTable = (
             {patients.length == 0 ? (<>
               <tr>
                 <td colSpan={4} className="align-middle text-center border-b border-[#eee] px-4 py-5 pl-9 dark:border-strokedark xl:pl-11">
-                  <p className="italic text-black dark:text-white">Nenhum nome registrado</p>
+                  <p className="italic text-black dark:text-white">Nenhum nome cadastrado. Utilize o botão acima para cadastrar um nome.</p>
                 </td>
               </tr>
             </>) : <></>}

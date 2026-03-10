@@ -1,65 +1,64 @@
-import AxiosInstance from '@/utils/axiosInstance';
-import React, { useState } from 'react';
-import Modal from './Modal';
+import React from 'react';
 import { useRouter } from 'next/router';
-import axios, { AxiosError } from 'axios';
-import ApiError from '@/types/api-error';
+import Image from 'next/image';
 
 const LoginComponent: React.FC = () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
-  const [name, setName] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(false)
+  // const [name, setName] = useState("")
+  // const [loading, setLoading] = useState(false)
+  // const [error, setError] = useState(false)
 
-  const [showModal, setShowModal] = useState(false)
+  // const [showModal, setShowModal] = useState(false)
   const router = useRouter()
 
-  const onAccpet = () => {
-    setLoading(true)
-    if (name.trim().length === 0) return
+  // const onAccpet = () => {
+  //   setLoading(true)
+  //   if (name.trim().length === 0) return
 
-    AxiosInstance.post('/api/pub/patients', { name: name }).then(r => {
-      if (r.status == 200) {
-        router.push('/registrado', { query: { name: name, status: "success" } })
-      } else {
-        router.push('/registrado', { query: { name: name, status: "error" } })
-      }
-    })
-      .catch((err) => {
-        if (axios.isAxiosError(err)) {
-          const axiosError = err as AxiosError<ApiError>
-          if (axiosError.response?.data.message == 'already exists') {
-            router.push('/registrado', { query: { name: name, status: "already-exists" } })
-          } else {
-            router.push('/registrado', { query: { name: name, status: "error" } })
-          }
-        } else {
-          router.push('/registrado', { query: { name: name, status: "error" } })
-        }
-      })
-      .finally(() => { setLoading(false); setName(''); setShowModal(false) })
-  }
+  //   AxiosInstance.post('/api/pub/patients', { name: name }).then(r => {
+  //     if (r.status == 200) {
+  //       router.push('/registrado', { query: { name: name, status: "success" } })
+  //     } else {
+  //       router.push('/registrado', { query: { name: name, status: "error" } })
+  //     }
+  //   })
+  //     .catch((err) => {
+  //       if (axios.isAxiosError(err)) {
+  //         const axiosError = err as AxiosError<ApiError>
+  //         if (axiosError.response?.data.message == 'already exists') {
+  //           router.push('/registrado', { query: { name: name, status: "already-exists" } })
+  //         } else {
+  //           router.push('/registrado', { query: { name: name, status: "error" } })
+  //         }
+  //       } else {
+  //         router.push('/registrado', { query: { name: name, status: "error" } })
+  //       }
+  //     })
+  //     .finally(() => { setLoading(false); setName(''); setShowModal(false) })
+  // }
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center">
-      <div className="max-w-screen-xl m-0 sm:m-10 bg-white shadow sm:rounded-lg flex justify-center flex-1">
-        <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
-          <div className='flex flex-col items-center'>
-            <h1 className='font-semibold text-indigo-500 text-xl'>Comunidade da Ação 🍀 Irradiação</h1>
+    <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center lg:items-center">
+      <div className="w-full max-w-screen-xl m-0 sm:m-8 bg-white shadow sm:rounded-lg flex justify-center flex-1 min-h-screen lg:min-h-[85vh]">
+        <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12 lg:p-14 flex flex-col">
+          <div className="w-full flex flex-col items-center shrink-0">
+            <h1 className="font-semibold text-indigo-500 text-2xl sm:text-3xl lg:text-2xl xl:text-3xl text-center">
+              Comunidade da Ação 🍀 Irradiação
+            </h1>
           </div>
-          <div className="mt-8 flex flex-col items-center">
-            <h1 className="text-2xl xl:text-3xl font-extrabold">
+          <div className="mt-8 sm:mt-10 flex flex-col items-center justify-center flex-1">
+            <h1 className="text-4xl sm:text-5xl lg:text-4xl xl:text-5xl font-extrabold">
               Entrar
             </h1>
-            <p className="mt-4 text-xs text-gray-600 text-center">
+            <p className="mt-5 text-sm sm:text-base text-gray-600 text-center max-w-lg">
               Adicionar múltiplos nomes, verificar status, renovar validade, solicitar tratamento intensivo e receber notificações
             </p>
-            <div className="w-full flex-1 mt-8">
+            <div className="w-full flex-1 mt-10">
               <div className="flex flex-col items-center">
 
                 <button
                   onClick={() => { location.href = `${apiUrl}/auth/google/login` }}
-                  className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline">
+                  className="w-full max-w-lg font-bold shadow-sm rounded-lg py-4 px-4 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline">
                   <div className="bg-white p-2 rounded-full">
                     <svg className="w-4" viewBox="0 0 533.5 544.3">
                       <path
@@ -83,7 +82,7 @@ const LoginComponent: React.FC = () => {
 
                 <button
                   onClick={() => { location.href = `${apiUrl}/auth/facebook/login` }}
-                  className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-5">
+                  className="w-full max-w-lg font-bold shadow-sm rounded-lg py-4 px-4 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-5">
                   <div className="bg-white p-2 rounded-full">
                     <svg className="w-4" viewBox="0 0 48 48">
                       <g id="Icons" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
@@ -103,7 +102,7 @@ const LoginComponent: React.FC = () => {
                 </button>
               </div>
 
-              <div className="my-12 border-b text-center">
+              {/* <div className="my-12 border-b text-center">
                 <div
                   className="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
                   Ou simplesmente indique um nome
@@ -152,21 +151,31 @@ const LoginComponent: React.FC = () => {
                 <p className="mt-2 text-xs text-gray-600 text-center">
                   Para nomes de terceiros é imprescindível que a pessoa saiba e <b>autorize</b> a energização
                 </p>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
         <div className="flex-1 text-center hidden lg:flex">
-          <div className="m-12 xl:m-16 w-full bg-cover bg-center"
-            style={{ backgroundImage: "url('https://heliogabriel.com/wp-content/webp-express/webp-images/uploads/2022/10/Helio-Foto-1024x1024.jpg.webp')" }}>
+          <div className="m-12 xl:m-16 w-full bg-cover bg-center">
+            <Image
+              className="object-cover"
+              src={"/images/helio.jpg"}
+              width={1024}
+              height={1024}
+              style={{
+                width: "100%",
+                height: "100%",
+              }}
+              alt="Helio Gabriel"
+            />
           </div>
         </div>
       </div>
-      <Modal showModal={showModal} loading={loading} title='Autorização' saveText='Sim, registrar' onClose={() => { setShowModal(false) }} onAccept={() => { onAccpet() }}>
+      {/* <Modal showModal={showModal} loading={loading} title='Autorização' saveText='Sim, registrar' onClose={() => { setShowModal(false) }} onAccept={() => { onAccpet() }}>
         <p> Para nomes de terceiros é imprescindível que a pessoa saiba e autorize a energização. </p>
         <br></br>
         <p> Deseja registar <b>{name}</b> para próxima sessão de irradiação ? </p>
-      </Modal>
+      </Modal> */}
     </div>
   );
 };

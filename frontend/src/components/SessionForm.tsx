@@ -10,6 +10,15 @@ const getDaysDiff = (dateStr: string): string => {
   return `${(days > 1 ? days + ' dias' : days == 0 ? '1 dia' : days + ' dia')}`
 }
 
+const getImageMimeTypeFromBase64 = (base64: string): string => {
+  if (base64.startsWith("/9j/")) return "image/jpeg";
+  if (base64.startsWith("iVBORw0KGgo")) return "image/png";
+  if (base64.startsWith("R0lGOD")) return "image/gif";
+  if (base64.startsWith("UklGR")) return "image/webp";
+  if (base64.startsWith("Qk")) return "image/bmp";
+  return "application/octet-stream";
+}
+
 const columns: Column<Patient>[] = [
   { key: 'name', label: 'Nome', sortable: true },
   // { key: 'age', label: 'Age', render: (value) => <span className="text-green-600">{value} years</span> },
@@ -40,17 +49,15 @@ const columnsUti: Column<UtiPatient>[] = [
 ];
 
 interface SessionFormProps {
-  onSave: (title: string, place: string, desc: string, data: Date, patients: Set<string | number>, utis: Set<string | number>) => void;
+  onSave: (title: string, place: string, desc: string, placeImg: string | undefined, data: Date, utis: Set<string | number>) => void;
   onCancel: () => void;
-  patients: Patient[];
-  selectedPatients: Set<string | number>;
-  onSelectedRowsChange: (selectedRows: Set<string | number>) => void;
   utis: UtiPatient[];
   selectedUtis: Set<string | number>;
   onSelectedUtiChange: (selectedRows: Set<string | number>) => void;
   initTitle: string;
   initDesc: string;
   initPlace: string;
+  initPlaceImg?: string;
   initData: Date | undefined;
 }
 
@@ -58,21 +65,20 @@ interface SessionFormProps {
 export default function SessionForm({
   onSave,
   onCancel,
-  patients,
-  selectedPatients: selectedRows,
-  onSelectedRowsChange,
   utis,
   selectedUtis,
   onSelectedUtiChange,
   initTitle,
   initDesc,
   initPlace,
+  initPlaceImg,
   initData
 }: SessionFormProps
 ) {
   const [title, setTitle] = useState(initTitle)
   const [place, setPlace] = useState(initPlace)
   const [desc, setDesc] = useState(initDesc)
+  const [placeImg, setPlaceImg] = useState<string | undefined>(initPlaceImg)
   const [data, setData] = useState<Date | undefined>(initData)
   // const [selectedRows, setSelectedRows] = useState<Set<string | number>>(new Set());
 
@@ -119,10 +125,41 @@ export default function SessionForm({
         </div>
         <div className="mb-6">
           <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-            Nomes Irradiação Geral
-            <span className="text-xl font-normal">{` (${selectedRows.size} / ${patients.length})`}</span>
+            Imagem da Localidade (opcional)
           </label>
-          <Table data={patients} columns={columns} selectedRows={selectedRows} onSelectedRowsChange={onSelectedRowsChange} />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(event) => {
+              const file = event.target.files?.[0]
+              if (!file) {
+                return
+              }
+              const reader = new FileReader()
+              reader.onload = () => {
+                const result = reader.result
+                if (typeof result !== "string") {
+                  return
+                }
+                const b64 = result.includes(",") ? result.split(",")[1] : result
+                setPlaceImg(b64)
+              }
+              reader.readAsDataURL(file)
+            }}
+            className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+          />
+          {placeImg ? (
+            <div className="mt-4">
+              <img src={`data:${getImageMimeTypeFromBase64(placeImg)};base64,${placeImg}`} alt="Pré-visualização da localidade" className="max-h-56 rounded border border-stroke object-contain" />
+              <button
+                type="button"
+                onClick={() => setPlaceImg(undefined)}
+                className="mt-2 text-sm font-medium text-red-500 hover:text-red-700"
+              >
+                Remover imagem
+              </button>
+            </div>
+          ) : null}
         </div>
         <div className="mb-6">
           <label className="mb-3 block text-sm font-medium text-black dark:text-white">
@@ -154,7 +191,7 @@ export default function SessionForm({
           <button
             onClick={() => {
               console.log('click')
-              onSave(title, place, desc, data!, selectedRows, selectedUtis)
+              onSave(title, place, desc, placeImg, data!, selectedUtis)
             }}
             disabled={title.length == 0 || data == undefined}
             className={` flex w-full justify-center ${title.length == 0 || data == undefined ? 'bg-gray-500' : 'bg-indigo-500'} rounded p-3 font-medium text-gray hover:bg-opacity-90`}>

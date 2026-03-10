@@ -9,7 +9,7 @@ export default function UtiForm({ onSave, onCancel, initName, initDesc, initBirt
   return (<div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
     <div className="border-b border-stroke px-4 sm:px-6.5 py-4 dark:border-strokedark">
       <h3 className="text-base sm:text-lg font-medium text-black dark:text-white">
-        Tratamento Intensivo
+        Cadastro de nome para receber irradiação
       </h3>
     </div>
     <div>
@@ -60,8 +60,8 @@ export default function UtiForm({ onSave, onCancel, initName, initDesc, initBirt
               console.log('click')
               onSave(name, desc, birth!)
             }}
-            disabled={name.length == 0 || birth == undefined}
-            className={` flex w-full justify-center ${name.length == 0 || birth == undefined ? 'bg-gray-500' : 'bg-indigo-500'} rounded p-3 font-medium text-gray hover:bg-opacity-90`}>
+            disabled={name.length == 0 || birth == undefined || desc.length < 5}
+            className={` flex w-full justify-center ${name.length == 0 || birth == undefined || desc.length < 5 ? 'bg-gray-500' : 'bg-indigo-500'} rounded p-3 font-medium text-gray hover:bg-opacity-90`}>
             Salvar
           </button>
         </div>

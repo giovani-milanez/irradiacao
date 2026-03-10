@@ -7,96 +7,113 @@ import (
 	"api/repository"
 	"api/service"
 	"api/types"
-	
+
 	"strconv"
 	"time"
 
 	"database/sql"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
 func main() {
 
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("No .env file found...")
+	}
 
 	emailChan := make(chan []types.EmailMessage)
 
 	port, _ := strconv.Atoi(os.Getenv("EMAIL_PORT"))
 	emailService := service.EmailService{
 		Messages: emailChan,
-		Host: os.Getenv("EMAIL_HOST"),
-		Port: port,
+		Host:     os.Getenv("EMAIL_HOST"),
+		Port:     port,
 		Username: os.Getenv("EMAIL_USERNAME"),
 		Password: os.Getenv("EMAIL_PASSWORD"),
-		From: os.Getenv("EMAIL_FROM"),
+		From:     os.Getenv("EMAIL_FROM"),
 	}
-	
+
 	go emailService.Run()
-	
-	 // connect to database
-	 url := os.Getenv("DATABASE_URL")
-	 db, err := sql.Open("postgres", url)
-	 if err != nil {
-			log.Fatal(err)
-	 }
-	 defer db.Close()
 
-	 // Run migrations
-	 migrator := migration.NewMigrator(db, "migrations", "data.sql")
-	 if err := migrator.Run(); err != nil {
-			log.Fatalf("Migration failed: %v", err)
-	 }
+	// connect to database
+	url := os.Getenv("DATABASE_URL")
+	db, err := sql.Open("postgres", url)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
 
-	 // Run seeds (only on first setup)
-	 if err := migrator.RunSeed(); err != nil {
-			log.Fatalf("Seeding failed: %v", err)
-	 }
+	// Run migrations
+	migrator := migration.NewMigrator(db, "migrations", "data.sql")
+	if err := migrator.Run(); err != nil {
+		log.Fatalf("Migration failed: %v", err)
+	}
 
-	
+	// Run seeds (only on first setup)
+	if err := migrator.RunSeed(); err != nil {
+		log.Fatalf("Seeding failed: %v", err)
+	}
+
 	key := os.Getenv("JWT_KEY")
 	validity, err := strconv.Atoi(os.Getenv("JWT_VALIDITY_DAYS"))
 	if err != nil || key == "" {
 		log.Fatal("No JWT key or validity supplied")
 	}
 
-	pRepo := repository.NewPatientRepository(db)
+	// pRepo := repository.NewPatientRepository(db)
 	uRepo := repository.NewUtiPatientRepository(db)
 	qRepo := repository.NewUtiQueueRepository(db)
 	userRepo := repository.NewUserRepository(db)
 	sRepo := repository.NewSessionRepository(db)
 	mRepo := repository.NewMemberRepository(db)
 
-	pc := controller.NewPatientController(service.NewPatientService(pRepo))
-	gc := controller.NewOAuthController(userRepo, pRepo, []byte(key), time.Hour * 24 * time.Duration(validity), os.Getenv("GOOGLE_CLIENT_ID"), os.Getenv("GOOGLE_CLIENT_SECRET"), os.Getenv("FACEBOOK_CLIENT_ID"), os.Getenv("FACEBOOK_CLIENT_SECRET"), os.Getenv("BACKEND_URL"), os.Getenv("FRONTEND_URL"))
+	// pc := controller.NewPatientController(service.NewPatientService(pRepo))
+	gc := controller.NewOAuthController(userRepo, []byte(key), time.Hour*24*time.Duration(validity), os.Getenv("GOOGLE_CLIENT_ID"), os.Getenv("GOOGLE_CLIENT_SECRET"), os.Getenv("FACEBOOK_CLIENT_ID"), os.Getenv("FACEBOOK_CLIENT_SECRET"), os.Getenv("BACKEND_URL"), os.Getenv("FRONTEND_URL"), emailChan)
 	uc := controller.NewUtiPatientController(service.NewUtiPatientService(uRepo, qRepo))
-	sc := controller.NewSessionController(service.NewSessionService(sRepo, pRepo, uRepo, userRepo, qRepo, emailChan))
+	sc := controller.NewSessionController(service.NewSessionService(sRepo, uRepo, userRepo, qRepo, emailChan))
 	mc := controller.NewMembersController(service.NewMemberService(mRepo))
 
-	router := gin.Default()	
+	router := gin.Default()
 	router.Use(middleware.ErrorMiddleware())
 	corsCfg := cors.DefaultConfig()
 	corsCfg.AllowCredentials = true
-	corsCfg.AllowAllOrigins = true
+	frontendURL := os.Getenv("FRONTEND_URL")
+	if frontendURL != "" {
+		origins := strings.Split(frontendURL, ",")
+		corsCfg.AllowOrigins = make([]string, 0, len(origins))
+		for _, origin := range origins {
+			trimmed := strings.TrimSpace(origin)
+			if trimmed != "" {
+				corsCfg.AllowOrigins = append(corsCfg.AllowOrigins, trimmed)
+			}
+		}
+	} else {
+		corsCfg.AllowOrigins = []string{"http://localhost:3000", "http://127.0.0.1:3000"}
+	}
 	corsCfg.AllowHeaders = append(corsCfg.AllowHeaders, "Authorization")
 	router.Use(cors.New(corsCfg))
 	auth := router.Group("/auth")
-	pub  := router.Group("/api/pub")
+	// pub := router.Group("/api/pub")
 	priv := router.Group("/api")
 	priv.Use(middleware.AuthMiddleware([]byte(key)))
-	
-	pub.POST("/patients", pc.Create)
 
-	priv.GET("/patients", pc.FindByUser)
-	priv.GET("/patients/all", pc.GetAll)
-	priv.GET("/patients/find", pc.FindByName)
-	priv.GET("/patients/valids", pc.FindAllValids)
-	priv.POST("/patients", pc.Create)
-	priv.DELETE("/patients/:id", pc.Delete)
-	priv.POST("/patients/:id/renew", pc.Renew)
+	// pub.POST("/patients", pc.Create)
+
+	// priv.GET("/patients", pc.FindByUser)
+	// priv.GET("/patients/all", pc.GetAll)
+	// priv.GET("/patients/find", pc.FindByName)
+	// priv.GET("/patients/valids", pc.FindAllValids)
+	// priv.POST("/patients", pc.Create)
+	// priv.DELETE("/patients/:id", pc.Delete)
+	// priv.POST("/patients/:id/renew", pc.Renew)
 
 	priv.GET("/uti", uc.FindByUser)
 	priv.GET("/uti/all", uc.GetAll)
@@ -123,12 +140,12 @@ func main() {
 
 	auth.GET("/:provider/login", gc.Login)
 	auth.GET("/:provider/callback", gc.Callback)
+	auth.POST("/logout", gc.Logout)
+	priv.GET("/me", gc.Me)
 	priv.GET("/users", gc.FindAll)
 
 	router.Run(":8080")
 }
-
-
 
 /*
 	user
@@ -149,7 +166,7 @@ func main() {
 
 	session
 
-	GET    /api/session/upcoming  
+	GET    /api/session/upcoming
 	GET    /api/session            *admin/member*
 	POST   /api/session            *admin*
 	GET    /api/session/{id}       *admin/member*

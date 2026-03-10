@@ -6,8 +6,8 @@ import (
 	"html/template"
 )
 
-func LoadTemplate(data types.EmailData) (string, error) {
-	tmpl, err := template.ParseFiles("email.html")
+func loadTemplate(filename string, data any) (string, error) {
+	tmpl, err := template.ParseFiles(filename)
 	if err != nil {
 		return "", err
 	}
@@ -17,4 +17,16 @@ func LoadTemplate(data types.EmailData) (string, error) {
 		return "", err
 	}
 	return buf.String(), nil
+}
+
+func LoadTemplateSessaoRealizada(data types.EmailData_SessaoRealizada) (string, error) {
+	return loadTemplate("email_sessao_realizada.html", data)
+}
+
+func LoadTemplateSessaoCriada(data types.EmailData_SessaoCriada) (string, error) {
+	return loadTemplate("email_sessao_criada.html", data)
+}
+
+func LoadTemplateCadastro(data types.EmailData_Cadastro) (string, error) {
+	return loadTemplate("email_cadastro.html", data)
 }
