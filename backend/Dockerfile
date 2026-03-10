@@ -2,7 +2,7 @@ FROM golang:alpine as builder
 
 ARG CGO_ENABLED=0
 # Set destination for COPY
-RUN apt-get update && apt-get install -y ca-certificates openssl
+RUN apk add --no-cache ca-certificates openssl
 
 ARG cert_location=/usr/local/share/ca-certificates
 WORKDIR /app
