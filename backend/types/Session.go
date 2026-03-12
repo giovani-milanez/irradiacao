@@ -16,11 +16,11 @@ type Session struct {
 	Done        bool      `json:"done"`
 	Date        time.Time `json:"date"`
 
-	// PatientsCount  int       `json:"patients_count"`
+	PatientsCount  int       `json:"patients_count"`
 	UtiCount     int `json:"uti_count"`
 	MembersCount int `json:"members_count"`
 
-	// Patients       []Patient    `json:"patients"`
+	Patients       []Patient    `json:"patients"`
 	Uti     []UtiPatient `json:"utis"`
 	Members []User       `json:"members"`
 }
@@ -36,6 +36,7 @@ type ISessionRepository interface {
 	UpdateUtis(c context.Context, id int, patients []int) error
 	UpdateMembers(c context.Context, id int, members []int) error
 	GetUtiById(c context.Context, id int) ([]UtiPatient, error)
+	GetPatientsById(c context.Context, id int) ([]Patient, error)
 }
 
 type ISessionService interface {

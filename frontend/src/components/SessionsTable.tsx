@@ -53,7 +53,9 @@ const SessionsTable = (
               <th className="px-4 py-4 font-medium text-black dark:text-white">
                 Lugar
               </th>
-              <th className="px-4 py-4 font-medium text-black dark:text-white"></th>
+              <th className="px-4 py-4 font-medium text-black dark:text-white">
+                Qtd. Geral
+              </th>
               <th className="px-4 py-4 font-medium text-black dark:text-white">
                 Qtd. Intensivo
               </th>

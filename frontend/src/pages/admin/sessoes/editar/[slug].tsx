@@ -31,22 +31,31 @@ export default function EditSessionsPage() {
       if (resp.status == 200) {
         setData(resp.data);
 
-        AxiosInstance.get<UtiPatient[]>(`/api/uti/queue`).then(r2 => {
-          if (r2.status == 200) {
-            setUtis(r2.data)
+        AxiosInstance.get<Patient[]>(`/api/patients/valids`).then(r => {
+          if (r.status == 200) {
+            setPatients(r.data)
+            const selected = new Set<string | number>()
+            r.data.forEach(p => { if (resp.data.patients.some(pd => pd.id == p.id)) { selected.add(p.id) } })
+            setSelectedPatients(selected)
 
-            const selectedUtis = new Set<string | number>()
-            r2.data.forEach(p => { if (resp.data.utis.some(pd => pd.id == p.id)) { selectedUtis.add(p.id) } })
-            setSelectedUtis(selectedUtis)
+            AxiosInstance.get<UtiPatient[]>(`/api/uti/queue`).then(r2 => {
+              if (r2.status == 200) {
+                setUtis(r2.data)
+
+                const selectedUtis = new Set<string | number>()
+                r2.data.forEach(p => { if (resp.data.utis.some(pd => pd.id == p.id)) { selectedUtis.add(p.id) } })
+                setSelectedUtis(selectedUtis)
+              }
+            })
           }
         })
       }
     }).finally(() => { setLoading(false) })
   }, [router])
 
-  const onSave = (title: string, place: string, desc: string, placeImg: string | undefined, data: Date, utis: Set<string | number>) => {
+  const onSave = (title: string, place: string, desc: string, placeImg: string | undefined, data: Date, patients: Set<string | number>, utis: Set<string | number>) => {
     const id = (router.query.slug as string)
-    AxiosInstance.put(`/api/session/${id}`, { title: title, desc: desc, place: place, place_img: placeImg, date: new Date(data.toUTCString()), uti_ids: Array.from(utis) }).then(r => {
+    AxiosInstance.put(`/api/session/${id}`, { title: title, desc: desc, place: place, place_img: placeImg, date: new Date(data.toUTCString()), patient_ids: Array.from(patients), uti_ids: Array.from(utis) }).then(r => {
       if (r.status == 204) {
         toast.success('Sessao atualizada!')
         router.back()
@@ -76,6 +85,9 @@ export default function EditSessionsPage() {
     {loading ? <LoadingSpinner></LoadingSpinner> :
       data != undefined ?
         <SessionForm
+          patients={patients ? patients : []}
+          selectedPatients={selectedPatients}
+          onSelectedRowsChange={setSelectedPatients}
           utis={utis ? utis : []}
           selectedUtis={selectedUtis}
           onSelectedUtiChange={setSelectedUtis}

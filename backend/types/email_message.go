@@ -12,6 +12,8 @@ type EmailData_SessaoRealizada struct {
 	Data string
 	HasUti bool
 	Uti []string
+	HasPatient bool
+	Patient []string
 }
 
 type EmailData_SessaoCriada struct {
@@ -23,5 +25,6 @@ type EmailData_SessaoCriada struct {
 
 type EmailData_Cadastro struct {
 	Nome string
-	Link string
+	LinkUti string
+	LinkGeral string
 }

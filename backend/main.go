@@ -68,17 +68,17 @@ func main() {
 		log.Fatal("No JWT key or validity supplied")
 	}
 
-	// pRepo := repository.NewPatientRepository(db)
+	pRepo := repository.NewPatientRepository(db)
 	uRepo := repository.NewUtiPatientRepository(db)
 	qRepo := repository.NewUtiQueueRepository(db)
 	userRepo := repository.NewUserRepository(db)
 	sRepo := repository.NewSessionRepository(db)
 	mRepo := repository.NewMemberRepository(db)
 
-	// pc := controller.NewPatientController(service.NewPatientService(pRepo))
+	pc := controller.NewPatientController(service.NewPatientService(pRepo))
 	gc := controller.NewOAuthController(userRepo, []byte(key), time.Hour*24*time.Duration(validity), os.Getenv("GOOGLE_CLIENT_ID"), os.Getenv("GOOGLE_CLIENT_SECRET"), os.Getenv("FACEBOOK_CLIENT_ID"), os.Getenv("FACEBOOK_CLIENT_SECRET"), os.Getenv("BACKEND_URL"), os.Getenv("FRONTEND_URL"), emailChan)
 	uc := controller.NewUtiPatientController(service.NewUtiPatientService(uRepo, qRepo))
-	sc := controller.NewSessionController(service.NewSessionService(sRepo, uRepo, userRepo, qRepo, emailChan))
+	sc := controller.NewSessionController(service.NewSessionService(sRepo, pRepo, uRepo, userRepo, qRepo, emailChan))
 	mc := controller.NewMembersController(service.NewMemberService(mRepo))
 
 	router := gin.Default()
@@ -107,13 +107,13 @@ func main() {
 
 	// pub.POST("/patients", pc.Create)
 
-	// priv.GET("/patients", pc.FindByUser)
-	// priv.GET("/patients/all", pc.GetAll)
-	// priv.GET("/patients/find", pc.FindByName)
-	// priv.GET("/patients/valids", pc.FindAllValids)
-	// priv.POST("/patients", pc.Create)
-	// priv.DELETE("/patients/:id", pc.Delete)
-	// priv.POST("/patients/:id/renew", pc.Renew)
+	priv.GET("/patients", pc.FindByUser)
+	priv.GET("/patients/all", pc.GetAll)
+	priv.GET("/patients/find", pc.FindByName)
+	priv.GET("/patients/valids", pc.FindAllValids)
+	priv.POST("/patients", pc.Create)
+	priv.DELETE("/patients/:id", pc.Delete)
+	priv.POST("/patients/:id/renew", pc.Renew)
 
 	priv.GET("/uti", uc.FindByUser)
 	priv.GET("/uti/all", uc.GetAll)

@@ -49,8 +49,11 @@ const columnsUti: Column<UtiPatient>[] = [
 ];
 
 interface SessionFormProps {
-  onSave: (title: string, place: string, desc: string, placeImg: string | undefined, data: Date, utis: Set<string | number>) => void;
+  onSave: (title: string, place: string, desc: string, placeImg: string | undefined, data: Date, patients: Set<string | number>, utis: Set<string | number>) => void;
   onCancel: () => void;
+  patients: Patient[];
+  selectedPatients: Set<string | number>;
+  onSelectedRowsChange: (selectedRows: Set<string | number>) => void;
   utis: UtiPatient[];
   selectedUtis: Set<string | number>;
   onSelectedUtiChange: (selectedRows: Set<string | number>) => void;
@@ -65,6 +68,9 @@ interface SessionFormProps {
 export default function SessionForm({
   onSave,
   onCancel,
+  patients,
+  selectedPatients: selectedRows,
+  onSelectedRowsChange,
   utis,
   selectedUtis,
   onSelectedUtiChange,
@@ -163,6 +169,13 @@ export default function SessionForm({
         </div>
         <div className="mb-6">
           <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+            Nomes Irradiação Geral
+            <span className="text-xl font-normal">{` (${selectedRows.size} / ${patients.length})`}</span>
+          </label>
+          <Table data={patients} columns={columns} selectedRows={selectedRows} onSelectedRowsChange={onSelectedRowsChange} />
+        </div>
+        <div className="mb-6">
+          <label className="mb-3 block text-sm font-medium text-black dark:text-white">
             Nomes Irradiação Intensiva
             <span className="text-xl font-normal">{` (${selectedUtis.size} / ${utis.length})`}</span>
           </label>
@@ -191,7 +204,7 @@ export default function SessionForm({
           <button
             onClick={() => {
               console.log('click')
-              onSave(title, place, desc, placeImg, data!, selectedUtis)
+              onSave(title, place, desc, placeImg, data!, selectedRows, selectedUtis)
             }}
             disabled={title.length == 0 || data == undefined}
             className={` flex w-full justify-center ${title.length == 0 || data == undefined ? 'bg-gray-500' : 'bg-indigo-500'} rounded p-3 font-medium text-gray hover:bg-opacity-90`}>

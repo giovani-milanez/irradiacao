@@ -11,15 +11,15 @@ import (
 
 type SessionService struct {
 	s_repo types.ISessionRepository
-	// p_repo types.IPatientRepository
+	p_repo types.IPatientRepository
 	ut_repo types.IUtiPatientRepository
 	u_repo  types.IUserRepository
 	q_repo  types.IUtiQueueRepository
 	mChan   chan []types.EmailMessage
 }
 
-func NewSessionService(s_repo types.ISessionRepository, ut_repo types.IUtiPatientRepository, u_repo types.IUserRepository, qRepo types.IUtiQueueRepository, mChan chan []types.EmailMessage) *SessionService {
-	return &SessionService{s_repo: s_repo, ut_repo: ut_repo, u_repo: u_repo, q_repo: qRepo, mChan: mChan}
+func NewSessionService(s_repo types.ISessionRepository, p_repo types.IPatientRepository, ut_repo types.IUtiPatientRepository, u_repo types.IUserRepository, qRepo types.IUtiQueueRepository, mChan chan []types.EmailMessage) *SessionService {
+	return &SessionService{s_repo: s_repo, p_repo: p_repo, ut_repo: ut_repo, u_repo: u_repo, q_repo: qRepo, mChan: mChan}
 }
 
 func (ss *SessionService) FindAll(c context.Context) ([]types.Session, error) {
@@ -38,6 +38,12 @@ func (ss *SessionService) GetById(c context.Context, id int) (types.Session, err
 	if err != nil {
 		return types.Session{}, err
 	}
+
+	s.Patients, err = ss.p_repo.FindBySession(c, s.Id)
+	if err != nil {
+		return types.Session{}, err
+	}
+	s.PatientsCount = len(s.Patients)
 
 	s.Uti, err = ss.ut_repo.FindBySession(c, s.Id)
 	s.UtiCount = len(s.Uti)
@@ -106,6 +112,10 @@ func (ss *SessionService) Create(c context.Context, item dto.CreateSessiontDTO) 
 		Done:        false,
 	}
 	s, err := ss.s_repo.Create(c, s)
+	if err != nil {
+		return types.Session{}, err
+	}
+	err = ss.s_repo.UpdatePatients(c, s.Id, item.PatientIds)
 	if err != nil {
 		return types.Session{}, err
 	}
@@ -179,6 +189,17 @@ func (ss *SessionService) Finish(c context.Context, id int) error {
 		_ = ss.q_repo.LeaveQueue(c, u.ID)
 	}
 
+	patients, err := ss.p_repo.FindBySession(c, s.Id)
+	if err != nil {
+		return err
+	}
+
+	for _, p := range patients {
+		if !p.IdUser.Valid {
+			_ = ss.p_repo.Delete(c, p.Id)
+		}
+	}
+
 	err = ss.q_repo.FixupQueuePositions(c)
 	go func() {
 		err := ss.BuildEmail(context.WithoutCancel(c), s)
@@ -195,6 +216,8 @@ func (ss *SessionService) BuildEmail(c context.Context, session types.Session) e
 	if err != nil {
 		return err
 	}
+	patients, err := ss.s_repo.GetPatientsById(c, session.Id)
+	if err != nil { return err }
 
 	loc, err := time.LoadLocation("America/Sao_Paulo")
 	var dataStr string
@@ -218,6 +241,21 @@ func (ss *SessionService) BuildEmail(c context.Context, session types.Session) e
 		} else {
 			data.HasUti = true
 			data.Uti = append(data.Uti, p.Name)
+		}
+	}
+
+	for _, p := range patients {
+		data, ok := emails[p.UserEmail.String]
+		if !ok {
+			ndata := types.EmailData_SessaoRealizada{}
+			ndata.Data = dataStr
+			ndata.Nome = p.UserName.String
+			ndata.HasPatient = true
+			ndata.Patient = []string{p.Name}
+			emails[p.UserEmail.String] = &ndata
+		} else {
+			data.HasPatient = true
+			data.Patient = append(data.Patient, p.Name)
 		}
 	}
 

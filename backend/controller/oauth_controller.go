@@ -110,7 +110,7 @@ func (pc *OAuthController) redirectWithAccessToken(c *gin.Context, token string)
 	c.SetSameSite(cookieSameSite(secure))
 	c.SetCookie("accessToken", token, age, "/", "", secure, true)
 
-	url := fmt.Sprintf("%s/uti", pc.frontendUrl)
+	url := fmt.Sprintf("%s/dashboard", pc.frontendUrl)
 	log.Printf("returning to %s", url)
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
@@ -124,7 +124,7 @@ func cookieSameSite(secure bool) http.SameSite {
 }
 
 func (pc *OAuthController) sendEmailCadastro(user types.User) error {
-	body, err := utils.LoadTemplateCadastro(types.EmailData_Cadastro{Nome: user.Name, Link: fmt.Sprintf("%s/uti/novo", pc.frontendUrl)})
+	body, err := utils.LoadTemplateCadastro(types.EmailData_Cadastro{Nome: user.Name, LinkUti: fmt.Sprintf("%s/uti/novo", pc.frontendUrl), LinkGeral: fmt.Sprintf("%s/dashboard", pc.frontendUrl)})
 	if err != nil {
 		return err
 	}

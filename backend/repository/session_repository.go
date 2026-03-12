@@ -57,6 +57,7 @@ SELECT
 		%s,
 		s.done,
 		s.date,
+		(SELECT COUNT(*) AS patient_count FROM patients_session ps WHERE ps.id_session = s.id),
     (SELECT COUNT(*) AS uti_count FROM uti_session us WHERE us.id_session = s.id),
 		(SELECT COUNT(*) AS members_count FROM members_session ms WHERE ms.id_session = s.id)     
 FROM 
@@ -89,7 +90,7 @@ FROM sessions s
 	for rows.Next() {
 		var u types.Session
 		if includes {
-			if err := rows.Scan(&u.Id, &u.IdUser, &u.Title, &u.Description, &u.Place, &u.PlaceImg, &u.Done, &u.Date, &u.UtiCount, &u.MembersCount); err != nil {
+			if err := rows.Scan(&u.Id, &u.IdUser, &u.Title, &u.Description, &u.Place, &u.PlaceImg, &u.Done, &u.Date, &u.PatientsCount, &u.UtiCount, &u.MembersCount); err != nil {
 				return []types.Session{}, err
 			}
 		} else {
@@ -245,6 +246,7 @@ func (r *SessionRepository) GetPatientsById(c context.Context, id int) ([]types.
 	}
 	return users, nil
 }
+
 
 func (r *SessionRepository) GetUtiById(c context.Context, id int) ([]types.UtiPatient, error) {
 	query := fmt.Sprintf(`

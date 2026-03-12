@@ -295,9 +295,22 @@
     {{if .HasUti}}
     <div class="uti-section">
       <div class="names-list">
-        <p>Nomes incluídos na sessão</p>
+        <p>Nomes incluídos na sessão Intensiva</p>
         <ul>
           {{range .Uti}}
+          <li>{{.}}</li>
+          {{end}}
+        </ul>
+      </div>
+    </div>
+    {{end}}
+
+    {{if .HasPatient}}
+    <div class="uti-section">
+      <div class="names-list">
+        <p>Nomes incluídos na sessão Geral</p>
+        <ul>
+          {{range .Patient}}
           <li>{{.}}</li>
           {{end}}
         </ul>

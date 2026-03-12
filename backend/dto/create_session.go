@@ -9,5 +9,6 @@ type CreateSessiontDTO struct {
 	PlaceImg []byte    `json:"place_img"`
 	Date     time.Time `json:"date"`
 
+	PatientIds []int `json:"patient_ids"`
 	UtiIds []int `json:"uti_ids"`
 }
