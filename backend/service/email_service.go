@@ -17,6 +17,7 @@ type EmailService struct {
 	Username string
 	Password string
 	From string
+	FromName string
 }
 
 func (em *EmailService) Run() {
@@ -25,7 +26,8 @@ func (em *EmailService) Run() {
 		
 		for _,message := range messages {
 			m := gomail.NewMessage()
-			m.SetHeader("From", m.FormatAddress(em.Username, em.From))
+			// m.SetHeader("From", m.FormatAddress(em.Username, em.From))
+			m.SetAddressHeader("From", em.From, em.FromName)
 			m.SetHeader("To", message.To...)
 			m.SetHeader("Subject", message.Subject)
 			m.SetBody(message.BodyType, message.Body)

@@ -39,6 +39,7 @@ func main() {
 		Username: os.Getenv("EMAIL_USERNAME"),
 		Password: os.Getenv("EMAIL_PASSWORD"),
 		From:     os.Getenv("EMAIL_FROM"),
+		FromName: os.Getenv("EMAIL_FROM_NAME"),
 	}
 
 	go emailService.Run()
